@@ -13,8 +13,11 @@ server::server() : server("127.0.0.1", 9090) {}
 
 server::server(const char *ip, short port) {
 	servaddr.sin_family = AF_INET;
+	/*
 	if (inet_pton(AF_INET, ip, &servaddr.sin_addr) < 0)
 		throw invalid_argument("Error: IP address cannot be resolved");
+		*/
+	servaddr.sin_addr.s_addr = INADDR_ANY;
 	servaddr.sin_port = htons(port);
 	bzero(&servaddr.sin_zero, sizeof(servaddr.sin_zero));
 
