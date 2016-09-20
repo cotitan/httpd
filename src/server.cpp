@@ -7,6 +7,8 @@
 using namespace std;
 using namespace http;
 
+#define BUF_SIZE 1024
+
 server::server() : server("127.0.0.1", 9090) {}
 
 server::server(const char *ip, short port) {
@@ -69,8 +71,8 @@ int server::start() {
 				} else {
 					buf[nread] = '\0';
 					// fprintf(stdout, "%s", buf);
-					response_to_req(clntsock[i], buf);
-					close(clntsock[i]);
+					route(clntsock[i], buf);
+					// close(clntsock[i]);
 				}
 			}
 		}
@@ -79,11 +81,77 @@ int server::start() {
 	return 0;
 }
 
+size_t get_file_size(const char *file) {
+	ifstream fin(file);
+	if (!fin.is_open())
+		return 0;
+	fin.seekg(0, ios::end);
+	size_t len = fin.tellg();
+	fin.close();
+	return len;
+}
+
+void send_resp(int fd, int code, const char *state,
+		const char *type, const char *datapath) {
+
+	char buf[BUF_SIZE];
+	size_t len = get_file_size(datapath);
+	httpResponse res(code, state, type, len);
+	res.send_head(fd);
+
+	if (len == 0)
+		return;
+
+	ifstream fin(datapath);
+	// fin.read(buf, BUF_SIZE);
+	while (!fin.eof()) {
+		fin.read(buf, BUF_SIZE);
+		write(fd, buf, fin.gcount());
+	}
+	// write(fd, buf, strlen(buf));
+	fin.close();
+}
+
+void server::route(int fd, char *msg) {
+	httpRequest req_msg(msg);
+	string url = req_msg.getUrl();
+	fprintf(stderr, "%s\n", url.c_str());
+
+	httpResponse res;
+	// if is root
+	if (url == "/" || url == "/index.html") {
+		send_resp(fd, 200, "OK", "text/html", "res/index.html");
+		return;
+	}
+
+	// e.g ip:port/non-exist.html
+	size_t epos = url.find('/', 0 + 1);
+	if (epos == string::npos) {
+		send_resp(fd, 404, "Not Found", "text/html", "res/default.html");
+	}
+
+
+	string level1 = url.substr(0, epos);
+	if (level1 == "/picture") {
+		string filename = url.substr(1, url.length() - 1);
+		ifstream fin(filename.c_str());
+		if (fin.is_open()) {
+			fin.close();	// reopen in send_resp()
+			send_resp(fd, 200, "OK", "image/webp",filename.c_str());
+		}
+		else
+			send_resp(fd, 404, "OK", "text/html", "res/default.html");
+
+	} else {
+		send_resp(fd, 404, "Not Found", "text/html", "res/default.html");
+	}
+}
+
 void server::response_to_req(int fd, char *msg) {
 	httpRequest req_msg(msg);
 	// req_msg.print();
 
-	char msgToWrite[1024], buf[101];
+	char buf[101];
 	strcpy(buf, "HTTP/1.1 200 OK\r\n");
 	strcat(buf, "Server: jdbhttpd/0.1.0\r\n");
 	strcat(buf, "Content-Type: text/html\r\n");

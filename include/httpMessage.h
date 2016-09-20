@@ -38,20 +38,43 @@ namespace http {
 			char data[1024];
 			bool set_attr(const string &attr, const string& value);
 			void reslove_req_line(string &line);
+		
 		public:
 			httpRequest() {}
 			httpRequest(char *http_str);
 			bool from_str(char *http_str);
 			void print();
+			inline string getUrl() { return url; }
+			inline char* getData() { return data; }
 	};
 
 	class httpResponse {
+	private:
 		string http_version;
-		int status_code;
-		string status_phrase;
-		char buf[1024];
-	};
+		int code;
+		string phrase;
+		string content_type;
+		size_t content_length;
+		char *datapath;
+	public:
+		httpResponse();
 
+		httpResponse(int code_, const string& phrase_,
+				const string &type, size_t length);
+
+		void set(int code_, const string& phrase_,
+				const string &type, size_t length);
+
+		void set_code(int code_);
+
+		void set_phrase(const string &phrase_);
+
+		void set_content_type(const string &type_);
+
+		void set_content_length(size_t content_length_);
+		
+		void send_head(int fd);
+	};
 }; // end namespace
 
 

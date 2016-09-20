@@ -18,6 +18,8 @@ private:
 	struct sockaddr_in servaddr;
 	struct sockaddr_in connaddr;
 	int maxfdp1;
+
+	void route(int fd, char *msg);
 	void response_to_req(int fd, char *msg);
 public:
 	// default = "127.0.0.1:9090"

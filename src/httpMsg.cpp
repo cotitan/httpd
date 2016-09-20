@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <cctype>
+#include <unistd.h>
 #include <sstream>
 using namespace http;
 using namespace std;
@@ -114,11 +115,68 @@ void httpRequest::reslove_req_line(string &line) {
 	const char *str_method = line.substr(0, epos).c_str();
 	this->method = resolve_method(str_method);
 
-	int spos = line.find('/', epos);
+	int spos = epos + 1;
 	epos = line.find(' ', spos);
-	this->Host = line.substr(spos, epos - spos);
+	this->url = line.substr(spos, epos - spos);
 
 	spos = epos + 1;
 	epos = line.length();
 	this->http_version = line.substr(spos, epos - spos);
+}
+
+
+/*
+	string http_version;
+	int code;
+	string phrase;
+	string content_type;
+	size_t content_length;
+	char *datapath;
+*/
+httpResponse::httpResponse() {
+	http_version = "HTTP/1.1";
+	set(200, "OK", "text/html", 0);
+}
+
+httpResponse::httpResponse(int code_, const string& phrase_,
+		const string &type, size_t length) {
+	http_version = "HTTP/1.1";
+	set(code_, phrase_, type, length);
+}
+
+void httpResponse::set(int code_, const string& phrase_,
+		const string &type, size_t length) {
+	code = code_;
+	phrase = phrase_;
+	content_type = type;
+	content_length = length;
+}
+
+void httpResponse::set_code(int code_) {
+	code = code_;
+}
+
+void httpResponse::set_phrase(const string &phrase_) {
+	phrase = phrase_;
+}
+
+void httpResponse::set_content_type(const string &type) {
+	content_type = type;
+}
+
+void httpResponse::set_content_length(size_t length) {
+	content_length = length;
+}
+
+void httpResponse::send_head(int fd) {
+	char buf[1024], temp[100];
+	sprintf(buf, "HTTP/1.1 %d %s\r\n", code, phrase.c_str());
+	strcat(buf, "Server: jdbhttpd/0.1.0\r\n");
+	strcat(buf, "Connection: keep-alive\r\n");
+	sprintf(temp, "Content-Type: %s\r\n", content_type.c_str());
+	strcat(buf, temp);
+	sprintf(temp, "Content-Length: %lu\r\n", content_length);
+	strcat(buf, temp);
+	strcat(buf, "\r\n");
+	write(fd, buf, strlen(buf));
 }
