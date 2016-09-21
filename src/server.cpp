@@ -125,6 +125,9 @@ void server::route(int fd, char *msg) {
 	if (url == "/" || url == "/index.html") {
 		send_resp(fd, 200, "OK", "text/html", "res/index.html");
 		return;
+	} else if (url == "/favicon.ico") {
+		send_resp(fd, 200, "OK", "image/webp", "picture/favicon.ico");
+		return;
 	}
 
 	// e.g ip:port/non-exist.html
