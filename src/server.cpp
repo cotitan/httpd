@@ -1,5 +1,6 @@
 #include "server.h"
 #include "httpMessage.h"
+#include <signal.h>
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
@@ -27,6 +28,9 @@ server::server(const char *ip, short port) {
 }
 
 int server::start() {
+
+	signal(SIGPIPE, SIG_IGN);
+
 	int flag = 1;
 	socklen_t flag_size = sizeof(flag);
 	setsockopt(servsock, SOL_SOCKET, SO_REUSEADDR, &flag, flag_size);
