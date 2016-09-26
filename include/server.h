@@ -21,6 +21,8 @@ private:
 
 	void route(int fd, char *msg);
 	void response_to_req(int fd, char *msg);
+	void send_resp(int fd, int code, const char *state,
+		const char *type, const char *datapath);
 public:
 	// default = "127.0.0.1:9090"
 	server();

@@ -18,6 +18,7 @@ ${BIN_TARGET}:${OBJ}
 		    
 ${DIR_OBJ}/%.o:${DIR_SRC}/%.cpp
 	    $(CC) $(CFLAGS) -c  $< -o $@
-.PHONY:clean
-	clean:
-	    find ${DIR_OBJ} -name *.o -exec rm -rf {}
+
+clean:
+	find ${DIR_OBJ} -name *.o -exec rm -rf {} \;
+	rm bin/main

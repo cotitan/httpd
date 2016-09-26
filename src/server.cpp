@@ -98,7 +98,7 @@ size_t get_file_size(const char *file) {
 	return len;
 }
 
-void send_resp(int fd, int code, const char *state,
+void server::send_resp(int fd, int code, const char *state,
 		const char *type, const char *datapath) {
 
 	char buf[BUF_SIZE];

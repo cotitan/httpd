@@ -18,6 +18,7 @@ string trip(const string& line) {
 }
 
 httpRequest::httpRequest(char *http_str) {
+	data = NULL;
 	this->from_str(http_str);
 }
 
@@ -63,7 +64,7 @@ bool httpRequest::from_str(char *http_str) {
 				cout << "unknown header: " << attr << endl;
 		}
 	}
-
+	data = new char[content_length + 1];
 	strcpy(data, http_str + cnt_char);
 	return true;
 }
