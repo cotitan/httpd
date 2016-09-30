@@ -44,9 +44,12 @@ namespace http {
 			httpRequest() {}
 			httpRequest(char *http_str);
 			bool from_str(char *http_str);
-			void print();
-			inline string getUrl() { return url; }
-			inline char* getData() { return data; }
+			void print() const;
+			inline Method getMethod() const { return method; }
+			inline string getUrl() const { return url; }
+			inline char* getData() const { return data; }
+			void setData(char *dat);
+			inline int getContentLength() const { return content_length; }
 			~httpRequest() { delete[] data; }
 	};
 

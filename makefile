@@ -11,13 +11,13 @@ TARGET = main
 BIN_TARGET = ${DIR_BIN}/${TARGET}
 
 CC = g++
-CFLAGS = -g -Wall -I${DIR_INC} -std=c++11 
+CFLAGS = -g -Wall -I${DIR_INC} -std=c++11
 
 ${BIN_TARGET}:${OBJ}
-	    $(CC) $(OBJ)  -o $@
+	    $(CC) $(OBJ)  -o $@ -lpthread
 		    
 ${DIR_OBJ}/%.o:${DIR_SRC}/%.cpp
-	    $(CC) $(CFLAGS) -c  $< -o $@
+	    $(CC) $(CFLAGS) -c  $< -o $@ -lpthread
 
 clean:
 	find ${DIR_OBJ} -name *.o -exec rm -rf {} \;

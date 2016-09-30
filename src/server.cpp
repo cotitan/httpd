@@ -1,14 +1,12 @@
 #include "server.h"
-#include "httpMessage.h"
+#include "tools.h"
 #include <signal.h>
 #include <stdexcept>
 #include <iostream>
-#include <fstream>
-#include <cstring>
-using namespace std;
-using namespace http;
+#include <pthread.h>
+#include <unistd.h>
 
-#define BUF_SIZE 1024
+using namespace std;
 
 server::server() : server("127.0.0.1", 9090) {}
 
@@ -45,10 +43,11 @@ int server::start() {
 	FD_ZERO(&rset);
 	FD_ZERO(&allset);
 	FD_SET(servsock, &allset);
-	char buf[1000];
 
-	int nresponse, connsock, nread;
+	pthread_t pid;
+	int nresponse, connsock;
 	socklen_t sin_size = sizeof(servaddr);
+
 
 	while (1) {
 		rset = allset;
@@ -61,62 +60,30 @@ int server::start() {
 			FD_SET(connsock, &allset);
 			maxfdp1 = connsock >= maxfdp1 ? connsock + 1 : maxfdp1;
 			clntsock.push_back(connsock);
-			continue;
 		}
 
-		for (size_t i = 0; i < clntsock.size(); ++i) {
+		void *status;
+		for (size_t i = 0; i < clntsock.size() && nresponse; ++i) {
 			if (FD_ISSET(clntsock[i], &rset)) {
-				if ((nread = read(clntsock[i], buf, sizeof(buf)) ) <= 0) {
+				pthread_create(&pid, NULL, accept_req, (void *)&clntsock[i]);
+				pthread_join(pid, &status);
+
+				if (status == (void *)-1) {
 					getpeername(clntsock[i], (SA *)&connaddr, &sin_size);
 					fprintf(stdout, "remote host %s:%d disconnected...\n",
 							inet_ntoa(connaddr.sin_addr), connaddr.sin_port);
 					close(clntsock[i]);
-					printf("socket %d closed\n", clntsock[i]);
+					// printf("socket %d closed\n", clntsock[i]);
 					FD_CLR(clntsock[i], &allset);
 					clntsock.erase(clntsock.begin() + i);
 					--i;
-				} else {
-					buf[nread] = '\0';
-					// fprintf(stdout, "%s", buf);
-					route(clntsock[i], buf);
-					// close(clntsock[i]);
 				}
+				nresponse--;
 			}
-		}
+		} // end for
 
 	}
 	return 0;
-}
-
-size_t get_file_size(const char *file) {
-	ifstream fin(file);
-	if (!fin.is_open())
-		return 0;
-	fin.seekg(0, ios::end);
-	size_t len = fin.tellg();
-	fin.close();
-	return len;
-}
-
-void server::send_resp(int fd, int code, const char *state,
-		const char *type, const char *datapath) {
-
-	char buf[BUF_SIZE];
-	size_t len = get_file_size(datapath);
-	httpResponse res(code, state, type, len);
-	res.send_head(fd);
-
-	if (len == 0)
-		return;
-
-	ifstream fin(datapath);
-	// fin.read(buf, BUF_SIZE);
-	while (!fin.eof()) {
-		fin.read(buf, BUF_SIZE);
-		write(fd, buf, fin.gcount());
-	}
-	// write(fd, buf, strlen(buf));
-	fin.close();
 }
 
 void server::route(int fd, char *msg) {
@@ -140,17 +107,28 @@ void server::route(int fd, char *msg) {
 		send_resp(fd, 404, "Not Found", "text/html", "res/default.html");
 	}
 
-
 	string level1 = url.substr(0, epos);
 	if (level1 == "/picture") {
 		string filename = url.substr(1, url.length() - 1);
-		ifstream fin(filename.c_str());
-		if (fin.is_open()) {
-			fin.close();	// reopen in send_resp()
-			send_resp(fd, 200, "OK", "image/webp",filename.c_str());
+		if (req_msg.getMethod() == GET) {
+			ifstream fin(filename.c_str());
+			if (fin.is_open()) {
+				fin.close();	// reopen in send_resp()
+				send_resp(fd, 200, "OK", "image/webp",filename.c_str());
+			}
+			else
+				send_resp(fd, 404, "Not Found", "text/html", "res/default.html");
+			fin.close();
+		} else if ( req_msg.getMethod() == POST) {
+			ofstream fout(filename.c_str());
+			// if (!fout.is_open()) {
+				// fout << req_msg.getData();
+				send_resp(fd, 200, "OK");
+			// } else {
+			//	send_resp(fd, 404, "Not Found");
+			// }
+			fout.close();
 		}
-		else
-			send_resp(fd, 404, "OK", "text/html", "res/default.html");
 
 	} else {
 		send_resp(fd, 404, "Not Found", "text/html", "res/default.html");

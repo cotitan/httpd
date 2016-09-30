@@ -18,6 +18,7 @@ string trip(const string& line) {
 }
 
 httpRequest::httpRequest(char *http_str) {
+	content_length = 0;
 	data = NULL;
 	this->from_str(http_str);
 }
@@ -64,13 +65,15 @@ bool httpRequest::from_str(char *http_str) {
 				cout << "unknown header: " << attr << endl;
 		}
 	}
+	// cout << content_length;
 	data = new char[content_length + 1];
-	strcpy(data, http_str + cnt_char);
+	strncpy(data, http_str + cnt_char, content_length);
+	data[content_length] = 0;
 	return true;
 }
 
 char method_str[][10] = {"GET", "POST", "HEAD", "DELETE", "PUT", "ERR" };
-void httpRequest::print() {
+void httpRequest::print() const {
 	cout << "Method: " << method_str[method] << endl;
 	cout << "URL: " << url << endl;
 	cout << "HTTP: " << http_version << endl;
@@ -105,6 +108,8 @@ bool httpRequest::set_attr(const string &attr, const string& value) {
 		acpt_encd = value;
 	} else if (strcasecmp(str, "Accept-Language") == 0) {
 		acpt_lang = value;
+	} else if (strcasecmp(str, "Content-Length") == 0) {
+		content_length = atoi(value.c_str());
 	} else {
 		return false;
 	}
@@ -125,15 +130,16 @@ void httpRequest::reslove_req_line(string &line) {
 	this->http_version = line.substr(spos, epos - spos);
 }
 
+void httpRequest::setData(char *dat) {
+	delete[] data;
+	data = dat;
+}
 
-/*
-	string http_version;
-	int code;
-	string phrase;
-	string content_type;
-	size_t content_length;
-	char *datapath;
-*/
+
+/*************** httpResponse function definition ***********/
+
+
+
 httpResponse::httpResponse() {
 	http_version = "HTTP/1.1";
 	set(200, "OK", "text/html", 0);
