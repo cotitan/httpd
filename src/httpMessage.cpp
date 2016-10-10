@@ -110,6 +110,8 @@ bool httpRequest::set_attr(const string &attr, const string& value) {
 		acpt_lang = value;
 	} else if (strcasecmp(str, "Content-Length") == 0) {
 		content_length = atoi(value.c_str());
+	} else if (strcasecmp(str, "Pragma") == 0) {
+		pragma = value;
 	} else {
 		return false;
 	}
@@ -137,8 +139,6 @@ void httpRequest::setData(char *dat) {
 
 
 /*************** httpResponse function definition ***********/
-
-
 
 httpResponse::httpResponse() {
 	http_version = "HTTP/1.1";
@@ -180,10 +180,12 @@ void httpResponse::send_head(int fd) {
 	sprintf(buf, "HTTP/1.1 %d %s\r\n", code, phrase.c_str());
 	strcat(buf, "Server: jdbhttpd/0.1.0\r\n");
 	strcat(buf, "Connection: keep-alive\r\n");
-	sprintf(temp, "Content-Type: %s\r\n", content_type.c_str());
-	strcat(buf, temp);
 	sprintf(temp, "Content-Length: %lu\r\n", content_length);
 	strcat(buf, temp);
+	if (content_length != 0) {
+		sprintf(temp, "Content-Type: %s\r\n", content_type.c_str());
+		strcat(buf, temp);
+	}
 	strcat(buf, "\r\n");
 	write(fd, buf, strlen(buf));
 }

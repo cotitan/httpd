@@ -1,5 +1,5 @@
 #include "server.h"
-#include "tools.h"
+#include <cstring>
 #include <signal.h>
 #include <stdexcept>
 #include <iostream>
@@ -7,6 +7,8 @@
 #include <unistd.h>
 
 using namespace std;
+
+extern void *accept_req(void* fd);
 
 server::server() : server("127.0.0.1", 9090) {}
 
@@ -86,6 +88,7 @@ int server::start() {
 	return 0;
 }
 
+/**
 void server::route(int fd, char *msg) {
 	httpRequest req_msg(msg);
 	string url = req_msg.getUrl();
@@ -153,25 +156,8 @@ void server::response_to_req(int fd, char *msg) {
 		fgets(buf, sizeof(buf), resource);
 	}
 	fclose(resource);
-	/*
-	strcpy(msgToWrite, "HTTP/1.1 200 OK\n");
-	strcat(msgToWrite, "Connection: keep-alive\n");
-	// strcat(msgToWrite, "Content-Encoding: gzip\n");
-	ifstream fin("res/index.html");
-	fin.seekg(0, ios::end);
-	size_t length = fin.tellg();
-	sprintf(buf, "Content-Length: %lu\n", length);
-	strcat(msgToWrite, buf);
-	strcat(msgToWrite, " Content-Type: text/html\n\n");
-	fin.seekg(0);
-	fin.get(buf, length, '\0');
-	strcat(msgToWrite, buf);
-	// cout << msgToWrite << endl;
-	int nwrite = write(fd, msgToWrite, strlen(msgToWrite));
-	fin.close();
-	*/
 }
-
+**/
 server::~server() {
 	close(servsock);
 	for (size_t i = 0; i < clntsock.size(); ++i)

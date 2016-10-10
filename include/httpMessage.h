@@ -17,10 +17,6 @@ namespace http {
 		Forbidden = 403, Not_Found = 404,
 		Internal_Server_Error = 500, Server_Unavailable = 503 };
 
-	class httpMsg {
-	};
-
-
 	class httpRequest {
 		private:
 			Method method;
@@ -36,6 +32,7 @@ namespace http {
 			string referer;
 			string acpt_encd;
 			string acpt_lang;
+			string pragma;
 			char *data;
 			bool set_attr(const string &attr, const string& value);
 			void reslove_req_line(string &line);
@@ -47,7 +44,7 @@ namespace http {
 			void print() const;
 			inline Method getMethod() const { return method; }
 			inline string getUrl() const { return url; }
-			inline char* getData() const { return data; }
+			inline const char* getData() const { return data; }
 			void setData(char *dat);
 			inline int getContentLength() const { return content_length; }
 			~httpRequest() { delete[] data; }
