@@ -38,12 +38,12 @@ int server::start() {
 
 	bind_listen();
 
-	int epfd = epoll_create(1024);
-	struct epoll_event events[1024];
+	int epfd = epoll_create(SEGSIZE);
+	struct epoll_event events[SEGSIZE];
 	add_event(epfd, listenfd, EPOLLIN);
 
 	while (1) {
-		int ret = epoll_wait(epfd, events, 1024, -1);
+		int ret = epoll_wait(epfd, events, SEGSIZE, -1);
 		for (int i = 0; i < ret; i++) {
 			int fd = events[i].data.fd;
 			if (fd == listenfd && (events[i].events & EPOLLIN)) {
@@ -111,11 +111,14 @@ void server::do_read(int epfd, int fd) {
         delete[] header;
     }
     else {
+    	struct thread_params param = { fd, header, nread };
+    	/*
     	pthread_t pid;
     	void *status;
-    	struct thread_params param = { fd, header, nread };
         pthread_create(&pid, NULL, accept_req, &param);
         pthread_join(pid, &status);
+        */
+        accept_req((void *)&param);
         // header will be deleted in accept_req
     }
 }
