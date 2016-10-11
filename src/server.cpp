@@ -40,6 +40,7 @@ int server::start() {
 
 	int epfd = epoll_create(SEGSIZE);
 	struct epoll_event events[SEGSIZE];
+	memset(events, 0, sizeof(events));
 	add_event(epfd, listenfd, EPOLLIN);
 
 	while (1) {
@@ -82,6 +83,7 @@ void server::bind_listen() {
 
 void server::add_event(int epfd, int fd, int state) {
 	struct epoll_event ev;
+	memset(&ev, 0, sizeof(ev));
 	ev.events = state;
 	ev.data.fd = fd;
 	if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
@@ -96,7 +98,7 @@ void server::delete_event(int epollfd, int fd, int state) {
 }
 
 void server::do_read(int epfd, int fd) {
-	char *header = new char[SEGSIZE + 1];
+	char *header = new char[SEGSIZE + 1] { 0 };
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {
         perror("read error:");
