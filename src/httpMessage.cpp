@@ -61,60 +61,18 @@ bool httpRequest::from_str(char *http_str) {
 		if (pos_colon != string::npos) {
 			attr = line.substr(0, pos_colon);
 			value = line.substr(pos_colon + 2, len - pos_colon - 2);
-			if (set_attr(attr, value) == false)
-				cout << "unknown header: " << attr << endl;
+			// if (set_attr(attr, value) == false)
+			//	cout << "unknown header: " << attr << endl;
+			headers[attr] = value;
 		}
+	}
+	if (headers.find("Content-Length") != headers.end()) {
+		content_length = atoi(headers["Content-Length"].c_str());
 	}
 	// cout << content_length;
 	data = new char[content_length + 1];
 	strncpy(data, http_str + cnt_char, content_length);
 	data[content_length] = 0;
-	return true;
-}
-
-char method_str[][10] = {"GET", "POST", "HEAD", "DELETE", "PUT", "ERR" };
-void httpRequest::print() const {
-	cout << "Method: " << method_str[method] << endl;
-	cout << "URL: " << url << endl;
-	cout << "HTTP: " << http_version << endl;
-	cout << "Host: " << Host << endl;
-	cout << "Connection: " << Connection << endl;
-	cout << "Cache-control: " << cache_control.max_age << endl;
-	cout << "Upgrade-Insecure-Requests: " << UIR << endl;
-	cout << "User-Agent: " << user_agent << endl;
-	cout << "Accept: " << accept << endl;
-	cout << "Accept-Encoding: " << acpt_encd << endl;
-	cout << "Accept-Language: " << acpt_lang << endl;
-	cout << endl;
-}
-
-bool httpRequest::set_attr(const string &attr, const string& value) {
-	const char *str = attr.c_str();
-	if (strcasecmp(str, "Host") == 0) {
-		Host = value;
-	} else if (strcasecmp(str, "Connection") == 0) {
-		Connection = value;
-	} else if (strcasecmp(str, "Cache-Control") == 0) {
-		cache_control.max_age = atoi(value.c_str());
-	} else if (strcasecmp(str, "Upgrade-Insecure-Requests") == 0) {
-		UIR = atoi(value.c_str());
-	} else if (strcasecmp(str, "User-Agent") == 0) {
-		user_agent = value;
-	} else if (strcasecmp(str, "Accept") == 0) {
-		accept = value;
-	} else if (strcasecmp(str, "Referer") == 0) {
-		referer = value;
-	} else if (strcasecmp(str, "Accept-Encoding") == 0) {
-		acpt_encd = value;
-	} else if (strcasecmp(str, "Accept-Language") == 0) {
-		acpt_lang = value;
-	} else if (strcasecmp(str, "Content-Length") == 0) {
-		content_length = atoi(value.c_str());
-	} else if (strcasecmp(str, "Pragma") == 0) {
-		pragma = value;
-	} else {
-		return false;
-	}
 	return true;
 }
 
@@ -188,4 +146,55 @@ void httpResponse::send_head(int fd) {
 	}
 	strcat(buf, "\r\n");
 	write(fd, buf, strlen(buf));
+}
+
+
+char method_str[][10] = {"GET", "POST", "HEAD", "DELETE", "PUT", "ERR" };
+void httpRequest::print() const {
+	/*
+	cout << "Method: " << method_str[method] << endl;
+	cout << "URL: " << url << endl;
+	cout << "HTTP: " << http_version << endl;
+	cout << "Host: " << Host << endl;
+	cout << "Connection: " << Connection << endl;
+	cout << "Cache-control: " << cache_control.max_age << endl;
+	cout << "Upgrade-Insecure-Requests: " << UIR << endl;
+	cout << "User-Agent: " << user_agent << endl;
+	cout << "Accept: " << accept << endl;
+	cout << "Accept-Encoding: " << acpt_encd << endl;
+	cout << "Accept-Language: " << acpt_lang << endl;
+	cout << endl;
+	*/
+}
+
+bool httpRequest::set_attr(const string &attr, const string& value) {
+	/*
+	const char *str = attr.c_str();
+	if (strcasecmp(str, "Host") == 0) {
+		Host = value;
+	} else if (strcasecmp(str, "Connection") == 0) {
+		Connection = value;
+	} else if (strcasecmp(str, "Cache-Control") == 0) {
+		cache_control.max_age = atoi(value.c_str());
+	} else if (strcasecmp(str, "Upgrade-Insecure-Requests") == 0) {
+		UIR = atoi(value.c_str());
+	} else if (strcasecmp(str, "User-Agent") == 0) {
+		user_agent = value;
+	} else if (strcasecmp(str, "Accept") == 0) {
+		accept = value;
+	} else if (strcasecmp(str, "Referer") == 0) {
+		referer = value;
+	} else if (strcasecmp(str, "Accept-Encoding") == 0) {
+		acpt_encd = value;
+	} else if (strcasecmp(str, "Accept-Language") == 0) {
+		acpt_lang = value;
+	} else if (strcasecmp(str, "Content-Length") == 0) {
+		content_length = atoi(value.c_str());
+	} else if (strcasecmp(str, "Pragma") == 0) {
+		pragma = value;
+	} else {
+		return false;
+	}
+	*/
+	return true;
 }

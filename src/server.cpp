@@ -112,13 +112,12 @@ void server::do_read(int epfd, int fd) {
     }
     else {
     	struct thread_params param = { fd, header, nread };
-    	/*
-    	pthread_t pid;
-    	void *status;
-        pthread_create(&pid, NULL, accept_req, &param);
-        pthread_join(pid, &status);
-        */
-        accept_req((void *)&param);
+        void *status = accept_req((void *)&param);
+        if (status == (void *)-1) {
+        	close(fd);
+        	delete_event(epfd,fd,EPOLLIN); //删除监听
+        	delete[] header;
+        }
         // header will be deleted in accept_req
     }
 }

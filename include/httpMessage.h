@@ -25,17 +25,7 @@ namespace http {
 			Method method;
 			string url;
 			string http_version;
-			string Host;
-			string Connection;
-			Cache_Control cache_control;
-			int UIR; // Upgrade-Insecure-Requests
-			string user_agent;
 			size_t content_length;
-			string accept;
-			string referer;
-			string acpt_encd;
-			string acpt_lang;
-			string pragma;
 			char *data;
 			bool set_attr(const string &attr, const string& value);
 			void reslove_req_line(string &line);
@@ -49,7 +39,9 @@ namespace http {
 			inline string getUrl() const { return url; }
 			inline const char* getData() const { return data; }
 			void setData(char *dat);
-			inline int getContentLength() const { return content_length; }
+			inline int getContentLength() const {
+				return atoi(headers.find("Content-Length")->second.c_str());
+			}
 			~httpRequest() { delete[] data; }
 	};
 
@@ -84,3 +76,15 @@ namespace http {
 
 
 #endif
+/*
+			string Host;
+			string Connection;
+			Cache_Control cache_control;
+			int UIR; // Upgrade-Insecure-Requests
+			string user_agent;
+			string accept;
+			string referer;
+			string acpt_encd;
+			string acpt_lang;
+			string pragma;
+			*/

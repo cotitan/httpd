@@ -37,13 +37,18 @@ void *accept_req(void* param_) {
 	int connfd = param.connfd;
 	char *header = param.header, *pos;
 	int nread = param.len;
-	while (nread && (pos = strstr(header, "\r\n\r\n")) == NULL) {
+	while (nread && nread <= SEGSIZE
+			&& (pos = strstr(header, "\r\n\r\n")) == NULL) {
 		nread += read(connfd, header + nread, SEGSIZE);
 		header[nread] = 0;
 	}
 	// printf("%s\n", header);
 
 	httpRequest req(header);
+
+	if (req.getMethod() == ERR) {
+		return (void *) -1;
+	}
 
 	if (req.getMethod() == POST) {
 		int content_length = req.getContentLength();
@@ -66,4 +71,5 @@ void *accept_req(void* param_) {
 	route(connfd, req);
 	// delete[] data; // will be deleted in httpRequest::~httpRequest()
 	// pthread_exit((void *)0);
+	return NULL;
 }
