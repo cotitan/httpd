@@ -37,11 +37,15 @@ void *accept_req(void* param_) {
 	int connfd = param.connfd;
 	char *header = param.header, *pos;
 	int nread = param.len;
+	if ((pos = strstr(header, "\r\n\r\n")) == NULL)
+		return (void *)-1;
+	/*
 	while (nread && nread <= SEGSIZE
 			&& (pos = strstr(header, "\r\n\r\n")) == NULL) {
 		nread += read(connfd, header + nread, SEGSIZE);
 		header[nread] = 0;
 	}
+	*/
 	// printf("%s\n", header);
 
 	httpRequest req(header);
@@ -50,6 +54,7 @@ void *accept_req(void* param_) {
 		return (void *) -1;
 	}
 
+	printf("%d %s\n", req.getMethod(), req.getUrl().c_str());
 	if (req.getMethod() == POST) {
 		int content_length = req.getContentLength();
 		char *data = new char[content_length + 1];
