@@ -13,14 +13,14 @@ using std::vector;
 
 class server {
 private:
-	int servsock;
-	vector<int> clntsock;
+	int listenfd;
 	struct sockaddr_in servaddr;
 	struct sockaddr_in connaddr;
-	int maxfdp1;
-
-	// void route(int fd, char *msg);
-	// void response_to_req(int fd, char *msg);
+	void bind_listen();
+	void do_read(int epfd, int fd);
+	void handle_accept(int epfd, int listenfd);
+	void add_event(int epfd, int fd, int state);
+	void delete_event(int epfd, int fd, int state);
 
 public:
 	// default = "127.0.0.1:9090"

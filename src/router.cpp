@@ -7,6 +7,12 @@
 	#define SEGSIZE 10240
 #endif
 
+struct thread_params {
+	int connfd;
+	char *header;
+	int len;
+};
+
 void route(int connfd, const httpRequest &req) {
 	string url = req.getUrl();
 
@@ -24,20 +30,18 @@ void route(int connfd, const httpRequest &req) {
 	delete ctrller;
 }
 
-void *accept_req(void* fd) {
-	int connfd = *(int *)fd, nread = 0;
-	char header[SEGSIZE + 1], *pos;
-	header[SEGSIZE] = 0;
-	do {
+void *accept_req(void* param_) {
+	pthread_detach(pthread_self());
+	//sleep(50000);
+	struct thread_params param = *(struct thread_params *)param_;
+	int connfd = param.connfd;
+	char *header = param.header, *pos;
+	int nread = param.len;
+	while (nread && (pos = strstr(header, "\r\n\r\n")) == NULL) {
 		nread += read(connfd, header + nread, SEGSIZE);
 		header[nread] = 0;
-	} while (nread && (pos = strstr(header, "\r\n\r\n")) == NULL);
-
-	// printf("%s\n", header);
-
-	if (nread == 0) {
-		pthread_exit((void *)-1);
 	}
+	// printf("%s\n", header);
 
 	httpRequest req(header);
 
@@ -45,7 +49,7 @@ void *accept_req(void* fd) {
 		int content_length = req.getContentLength();
 		char *data = new char[content_length + 1];
 		if (data == NULL)
-			printf("fail to allocate memory for new\n");
+			perror("fail to allocate memory for new\n");
 
 		nread -= pos + 4 - header;
 		memcpy(data, pos + 4, nread);
@@ -56,21 +60,9 @@ void *accept_req(void* fd) {
 		}
 
 		req.setData(data);
-
-		/*
-		if (req.getMethod() == POST) {
-			string url = req.getUrl();
-			const char *path = url.substr(1, url.length() - 1).c_str();
-			ofstream fout(path, ios::out | ios::trunc);
-			if (fout.is_open()) {
-				fout.write(data, content_length);
-				fout.close();
-			}
-		}
-		send_resp(connfd, 200, "OK");
-		*/
 	}
-
+	delete[] header;
+	
 	route(connfd, req);
 	// delete[] data; // will be deleted in httpRequest::~httpRequest()
 	pthread_exit((void *)0);

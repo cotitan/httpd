@@ -5,10 +5,16 @@
 #include <iostream>
 #include <pthread.h>
 #include <unistd.h>
-
+#include <sys/epoll.h>
 using namespace std;
 
-extern void *accept_req(void* fd);
+#define SEGSIZE 10240
+extern void *accept_req(void *);
+struct thread_params {
+	int connfd;
+	char *header;
+	int len;
+};
 
 server::server() : server("127.0.0.1", 9090) {}
 
@@ -22,146 +28,100 @@ server::server(const char *ip, short port) {
 	servaddr.sin_port = htons(port);
 	bzero(&servaddr.sin_zero, sizeof(servaddr.sin_zero));
 
-	if ((servsock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		throw invalid_argument("Error: fail to get sockfd!");
-	maxfdp1 = servsock + 1;
 }
 
 int server::start() {
 
 	signal(SIGPIPE, SIG_IGN);
 
-	int flag = 1;
-	socklen_t flag_size = sizeof(flag);
-	setsockopt(servsock, SOL_SOCKET, SO_REUSEADDR, &flag, flag_size);
-	if (bind(servsock, (SA *)&servaddr, sizeof(servaddr)) < 0)
-		throw invalid_argument("Error: fail to bind!");
-	if (listen(servsock, 1000) < 0)
-		throw invalid_argument("Error: fail to listen!");
-	fprintf(stdout, "start listening on port %d...\n",
-			ntohs(servaddr.sin_port));
+	bind_listen();
 
-	fd_set rset, allset;
-	FD_ZERO(&rset);
-	FD_ZERO(&allset);
-	FD_SET(servsock, &allset);
-
-	pthread_t pid;
-	int nresponse, connsock;
-	socklen_t sin_size = sizeof(servaddr);
-
+	int epfd = epoll_create(1024);
+	struct epoll_event events[1024];
+	add_event(epfd, listenfd, EPOLLIN);
 
 	while (1) {
-		rset = allset;
-		nresponse = select(maxfdp1, &rset, NULL, NULL, NULL);
-
-		if (FD_ISSET(servsock, &rset)) {
-			connsock = accept(servsock, (SA *)&connaddr, &sin_size);
-			fprintf(stdout, "remote host %s:%d connected...\n",
-					inet_ntoa(connaddr.sin_addr), connaddr.sin_port);
-			FD_SET(connsock, &allset);
-			maxfdp1 = connsock >= maxfdp1 ? connsock + 1 : maxfdp1;
-			clntsock.push_back(connsock);
-		}
-
-		void *status;
-		for (size_t i = 0; i < clntsock.size() && nresponse; ++i) {
-			if (FD_ISSET(clntsock[i], &rset)) {
-				pthread_create(&pid, NULL, accept_req, (void *)&clntsock[i]);
-				pthread_join(pid, &status);
-
-				if (status == (void *)-1) {
-					getpeername(clntsock[i], (SA *)&connaddr, &sin_size);
-					fprintf(stdout, "remote host %s:%d disconnected...\n",
-							inet_ntoa(connaddr.sin_addr), connaddr.sin_port);
-					close(clntsock[i]);
-					// printf("socket %d closed\n", clntsock[i]);
-					FD_CLR(clntsock[i], &allset);
-					clntsock.erase(clntsock.begin() + i);
-					--i;
-				}
-				nresponse--;
+		int ret = epoll_wait(epfd, events, 1024, -1);
+		for (int i = 0; i < ret; i++) {
+			int fd = events[i].data.fd;
+			if (fd == listenfd && (events[i].events & EPOLLIN)) {
+				handle_accept(epfd, listenfd);
+			} else if (events[i].events & EPOLLIN) {
+				do_read(epfd, fd);
 			}
-		} // end for
-
+		}
 	}
 	return 0;
 }
 
-/**
-void server::route(int fd, char *msg) {
-	httpRequest req_msg(msg);
-	string url = req_msg.getUrl();
-	fprintf(stderr, "%s\n", url.c_str());
-
-	httpResponse res;
-	// if is root
-	if (url == "/" || url == "/index.html") {
-		send_resp(fd, 200, "OK", "text/html", "res/index.html");
-		return;
-	} else if (url == "/favicon.ico") {
-		send_resp(fd, 200, "OK", "image/webp", "picture/favicon.ico");
-		return;
-	}
-
-	// e.g ip:port/non-exist.html
-	size_t epos = url.find('/', 0 + 1);
-	if (epos == string::npos) {
-		send_resp(fd, 404, "Not Found", "text/html", "res/default.html");
-	}
-
-	string level1 = url.substr(0, epos);
-	if (level1 == "/picture") {
-		string filename = url.substr(1, url.length() - 1);
-		if (req_msg.getMethod() == GET) {
-			ifstream fin(filename.c_str());
-			if (fin.is_open()) {
-				fin.close();	// reopen in send_resp()
-				send_resp(fd, 200, "OK", "image/webp",filename.c_str());
-			}
-			else
-				send_resp(fd, 404, "Not Found", "text/html", "res/default.html");
-			fin.close();
-		} else if ( req_msg.getMethod() == POST) {
-			ofstream fout(filename.c_str());
-			// if (!fout.is_open()) {
-				// fout << req_msg.getData();
-				send_resp(fd, 200, "OK");
-			// } else {
-			//	send_resp(fd, 404, "Not Found");
-			// }
-			fout.close();
-		}
-
-	} else {
-		send_resp(fd, 404, "Not Found", "text/html", "res/default.html");
-	}
+void server::handle_accept(int epfd, int listenfd) {
+	socklen_t sin_size = sizeof(servaddr);
+	int fd = accept(listenfd, (SA *)&connaddr, &sin_size);
+	if (fd == -1)
+        perror("accpet error:");
+    else {    
+        // printf("accept a new client: %s:%d\n",
+        //    inet_ntoa(connaddr.sin_addr), connaddr.sin_port);                       //添加一个客户描述符和事件         
+        add_event(epfd, fd, EPOLLIN);
+    } 
 }
 
-void server::response_to_req(int fd, char *msg) {
-	httpRequest req_msg(msg);
-	// req_msg.print();
-
-	char buf[101];
-	strcpy(buf, "HTTP/1.1 200 OK\r\n");
-	strcat(buf, "Server: jdbhttpd/0.1.0\r\n");
-	strcat(buf, "Content-Type: text/html\r\n");
-	strcat(buf, "Connection: close\r\n");
-	strcat(buf, "\r\n");
-	write(fd, buf, strlen(buf));
-	FILE *resource = fopen("res/index.html", "r");
-	fgets(buf, sizeof(buf), resource);
-	while (!feof(resource)) {
-		write(fd, buf, strlen(buf));
-		fgets(buf, sizeof(buf), resource);
-	}
-	fclose(resource);
+void server::bind_listen() {
+	int flag = 1;
+	socklen_t flag_size = sizeof(flag);
+	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, flag_size);
+	if (bind(listenfd, (SA *)&servaddr, sizeof(servaddr)) < 0)
+		throw invalid_argument("Error: fail to bind!");
+	if (listen(listenfd, 1000) < 0)
+		throw invalid_argument("Error: fail to listen!");
+	fprintf(stdout, "start listening on port %d...\n",
+		ntohs(servaddr.sin_port));
 }
-**/
+
+void server::add_event(int epfd, int fd, int state) {
+	struct epoll_event ev;
+	ev.events = state;
+	ev.data.fd = fd;
+	if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
+		perror("error adding events!\n");
+}
+
+void server::delete_event(int epollfd, int fd, int state) {
+    struct epoll_event ev;
+    ev.events = state;
+    ev.data.fd = fd;
+    epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
+}
+
+void server::do_read(int epfd, int fd) {
+	char *header = new char[SEGSIZE + 1];
+	int nread = read(fd, header, SEGSIZE);
+	if (nread == -1) {
+        perror("read error:");
+        close(fd); //记住close fd
+        delete_event(epfd,fd,EPOLLIN); //删除监听
+        delete[] header;
+    }
+    else if (nread == 0) {
+        // fprintf(stderr,"client close.\n");
+        close(fd);
+        delete_event(epfd,fd,EPOLLIN); //删除监听
+        delete[] header;
+    }
+    else {
+    	pthread_t pid;
+    	void *status;
+    	struct thread_params param = { fd, header, nread };
+        pthread_create(&pid, NULL, accept_req, &param);
+        pthread_join(pid, &status);
+        // header will be deleted in accept_req
+    }
+}
+
 server::~server() {
-	close(servsock);
-	for (size_t i = 0; i < clntsock.size(); ++i)
-		close(clntsock[i]);
+	close(listenfd);
 	cerr << "Server shutdown, all connect closed\n";
 }
 
