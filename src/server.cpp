@@ -22,14 +22,14 @@ server::server(const char *ip, short port) {
 	servaddr.sin_family = AF_INET;
 	/*
 	if (inet_pton(AF_INET, ip, &servaddr.sin_addr) < 0)
-		throw invalid_argument("Error: IP address cannot be resolved");
+		perror("Error: IP address cannot be resolved");
 		*/
 	servaddr.sin_addr.s_addr = INADDR_ANY;
 	servaddr.sin_port = htons(port);
 	bzero(&servaddr.sin_zero, sizeof(servaddr.sin_zero));
 
 	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-		throw invalid_argument("Error: fail to get sockfd!");
+		perror("Error: fail to get sockfd!");
 }
 
 int server::start() {
@@ -73,9 +73,9 @@ void server::bind_listen() {
 	socklen_t flag_size = sizeof(flag);
 	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, flag_size);
 	if (bind(listenfd, (SA *)&servaddr, sizeof(servaddr)) < 0)
-		throw invalid_argument("Error: fail to bind!");
+		perror("Error: fail to bind!");
 	if (listen(listenfd, 1000) < 0)
-		throw invalid_argument("Error: fail to listen!");
+		perror("Error: fail to listen!");
 	fprintf(stdout, "start listening on port %d...\n",
 		ntohs(servaddr.sin_port));
 }
