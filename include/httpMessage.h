@@ -3,6 +3,8 @@
 #define HTTPMESSAGE_H_
 
 #include <string>
+#include <map>
+using std::map;
 using std::string;
 
 namespace http {
@@ -19,6 +21,7 @@ namespace http {
 
 	class httpRequest {
 		private:
+			map<string, string> headers;
 			Method method;
 			string url;
 			string http_version;
