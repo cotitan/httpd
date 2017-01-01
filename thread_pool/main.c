@@ -1,14 +1,13 @@
 #include "threadpool.h"
+#include <stdio.h>
 
-void* work(void* arg)
-{
+void* work(void* arg) {
     char *p = (char*) arg;
     printf("threadpool callback fuction : %s.\n", p);
     sleep(1);
 }
 
-int main(void)
-{
+int main(void) {
     struct threadpool *pool = threadpool_init(10, 20);
     threadpool_add_job(pool, work, "1");
     threadpool_add_job(pool, work, "2");

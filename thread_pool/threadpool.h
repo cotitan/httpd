@@ -1,15 +1,13 @@
 #include <pthread.h>
 #include <unistd.h>
 
-struct job
-{
+struct job {
     void* (*callback_function)(void *arg);    //线程回调函数
     void *arg;                                //回调函数参数
     struct job *next;
 };
 
-struct threadpool
-{
+struct threadpool {
     int thread_num;                   //线程池中开启线程的个数
     int queue_max_num;                //队列中最大job的个数
     struct job *head;                 //指向job的头指针
