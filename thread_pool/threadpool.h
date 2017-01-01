@@ -1,3 +1,6 @@
+#include <pthread.h>
+#include <unistd.h>
+
 struct job
 {
     void* (*callback_function)(void *arg);    //线程回调函数
