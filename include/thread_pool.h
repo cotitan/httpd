@@ -10,7 +10,7 @@ struct thread_params {
 	int len;
 };
 
-public class thread_pool {
+class thread_pool {
 private:
 	pthread_mutex_t mutex;
 	sem_t nJob;
