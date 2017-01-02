@@ -1,5 +1,6 @@
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H
+#include <semaphore.h>
 
 #define SEGSIZE 10240
 extern void *accept_req(void *);
