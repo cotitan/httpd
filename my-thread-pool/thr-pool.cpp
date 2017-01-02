@@ -28,6 +28,7 @@ void *func(void *args) {
 		(*j1.func)(j1.args);
 		sleep(1);
 		cout << "finish executing job #" << *(int *)j1.args << endl;
+		delete j1.args;
 	}
 	return NULL;
 }
@@ -46,9 +47,10 @@ int main() {
 		pthread_create(&threads[i], NULL, func, NULL);
 	}
 	for (int i = 0; i < 10; i++) {
-		int a = i;
+		int *a = new int;
+		*a = i;
 		pthread_mutex_lock(&mutex);
-		jobs.push(job(&sqr, &a));
+		jobs.push(job(&sqr, a));
 		pthread_mutex_unlock(&mutex);
 		sem_post(&count);
 	}
