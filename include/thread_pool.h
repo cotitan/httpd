@@ -68,9 +68,9 @@ public:
 			pthread_create(&threads[i], NULL, func, NULL);
 	}
 
-	void add_job(thread_params param) {
+	void add_job(int fd) {
 		pthread_mutex_lock(&mutex);
-		jobs.push(param);
+		jobs.push(fd);
 		pthread_mutex_unlock(&mutex);
 		sem_post(&nJob);
 	}
