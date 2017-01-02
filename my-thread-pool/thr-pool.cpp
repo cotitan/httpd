@@ -19,14 +19,16 @@ sem_t count;
 queue<job> jobs;
 
 void *func(void *args) {
-	sem_wait(&count);
-	pthread_mutex_lock(&mutex);
-	job j1 = jobs.front();
-	jobs.pop();
-	pthread_mutex_unlock(&mutex);
-	(*j1.func)(j1.args);
-	sleep(1);
-	cout << "finish executing job #" << *(int *)args << endl;
+	while (true) {
+		sem_wait(&count);
+		pthread_mutex_lock(&mutex);
+		job j1 = jobs.front();
+		jobs.pop();
+		pthread_mutex_unlock(&mutex);
+		(*j1.func)(j1.args);
+		sleep(1);
+		cout << "finish executing job #" << *(int *)args << endl;
+	}
 	return NULL;
 }
 
@@ -50,5 +52,9 @@ int main() {
 		jobs.push(job(&sqr, &a));
 		pthread_mutex_unlock(&mutex);
 		sem_post(&count);
+	}
+	void *ret;
+	for (int i = 0; i < 4; i++) {
+		pthread_join(thread[i], &ret);
 	}
 }
