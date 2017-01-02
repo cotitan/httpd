@@ -20,7 +20,7 @@ private:
 	int nThread;
 	int epfd;	// fd of epoll
 	queue<job> jobs;
-	void *func(void *args) {
+	static void *func(void *args) {
 		while (true) {
 			sem_wait(&nJob);
 			pthread_mutex_lock(&mutex);
