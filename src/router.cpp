@@ -32,7 +32,6 @@ void route(int connfd, const httpRequest &req) {
 
 void *accept_req(void* param_) {
 	// pthread_detach(pthread_self());
-	//sleep(50000);
 	struct thread_params param = *(struct thread_params *)param_;
 	int connfd = param.connfd;
 	char *header = param.header, *pos;

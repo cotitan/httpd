@@ -6,15 +6,10 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <sys/epoll.h>
+#include "thread_pool.h"
 using namespace std;
 
-#define SEGSIZE 10240
-extern void *accept_req(void *);
-struct thread_params {
-	int connfd;
-	char *header;
-	int len;
-};
+#define EPSIZE 10240
 
 server::server() : server("127.0.0.1", 9090) {}
 
@@ -38,19 +33,20 @@ int server::start() {
 
 	bind_listen();
 
-	int epfd = epoll_create(SEGSIZE);
-	struct epoll_event events[SEGSIZE];
+	int epfd = epoll_create(EPSIZE);
+	struct epoll_event events[EPSIZE];
 	memset(events, 0, sizeof(events));
 	add_event(epfd, listenfd, EPOLLIN);
+	thread_pool pool(epfd, 10);
 
 	while (1) {
-		int ret = epoll_wait(epfd, events, SEGSIZE, -1);
+		int ret = epoll_wait(epfd, events, EPSIZE, -1);
 		for (int i = 0; i < ret; i++) {
 			int fd = events[i].data.fd;
 			if (fd == listenfd && (events[i].events & EPOLLIN)) {
 				handle_accept(epfd, listenfd);
 			} else if (events[i].events & EPOLLIN) {
-				do_read(epfd, fd);
+				pool.add_job(fd);
 			}
 		}
 	}
@@ -64,7 +60,7 @@ void server::handle_accept(int epfd, int listenfd) {
         perror("accpet error:");
     else {    
         // printf("accept a new client: %s:%d\n",
-        //    inet_ntoa(connaddr.sin_addr), connaddr.sin_port);                       //添加一个客户描述符和事件         
+        // inet_ntoa(connaddr.sin_addr), connaddr.sin_port);                       //添加一个客户描述符和事件         
         add_event(epfd, fd, EPOLLIN);
     } 
 }
@@ -97,35 +93,7 @@ void server::delete_event(int epollfd, int fd, int state) {
     epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
 }
 
-void server::do_read(int epfd, int fd) {
-	char *header = new char[SEGSIZE + 1] { 0 };
-	int nread = read(fd, header, SEGSIZE);
-	if (nread == -1) {
-        perror("read error:");
-        close(fd); //记住close fd
-        delete_event(epfd,fd,EPOLLIN); //删除监听
-        delete[] header;
-    }
-    else if (nread == 0) {
-        // fprintf(stderr,"client close.\n");
-        close(fd);
-        delete_event(epfd,fd,EPOLLIN); //删除监听
-        delete[] header;
-    }
-    else {
-    	struct thread_params param = { fd, header, nread };
-        void *status = accept_req((void *)&param);
-        if (status == (void *)-1) {
-        	close(fd);
-        	delete_event(epfd,fd,EPOLLIN); //删除监听
-        	delete[] header;
-        }
-        // header will be deleted in accept_req
-    }
-}
-
 server::~server() {
 	close(listenfd);
 	cerr << "Server shutdown, all connect closed\n";
 }
-
