@@ -1,6 +1,8 @@
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H
 #include <semaphore.h>
+#include <queue>
+using std::queue;
 
 #define SEGSIZE 10240
 extern void *accept_req(void *);
@@ -65,7 +67,7 @@ public:
 		sem_init(&nJob, 0, 0);
 		pthread_t *threads = new pthread_t[nThread];
 		for (int i = 0; i < nThread; i++)
-			pthread_create(&threads[i], NULL, func, NULL);
+			pthread_create(&threads[i], NULL, &func, NULL);
 	}
 
 	void add_job(int fd) {
