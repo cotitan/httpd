@@ -55,6 +55,6 @@ int main() {
 	}
 	void *ret;
 	for (int i = 0; i < 4; i++) {
-		pthread_join(thread[i], &ret);
+		pthread_join(threads[i], &ret);
 	}
 }
