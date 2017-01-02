@@ -43,20 +43,21 @@ struct threadpool* threadpool_init(int thread_num, int queue_max_num) {
         for (i = 0; i < pool->thread_num; ++i) {
             pthread_create(&(pool->pthreads[i]), NULL, threadpool_function, (void *)pool);
         }
-
         return pool;
     } while (0);
 
     return NULL;
 }
 
-int threadpool_add_job(struct threadpool* pool, void* (*callback_function)(void *arg), void *arg) {
+int threadpool_add_job(struct threadpool* pool,
+    void* (*callback_function)(void *arg), void *arg) {
     assert(pool != NULL);
     assert(callback_function != NULL);
     assert(arg != NULL);
 
     pthread_mutex_lock(&(pool->mutex));
-    while ((pool->queue_cur_num == pool->queue_max_num) && !(pool->queue_close || pool->pool_close)) {
+    while ((pool->queue_cur_num == pool->queue_max_num)
+        && !(pool->queue_close || pool->pool_close)) {
         pthread_cond_wait(&(pool->queue_not_full), &(pool->mutex));   //队列满的时候就等待
     }
     if (pool->queue_close || pool->pool_close)  {  //队列关闭或者线程池关闭就退出
@@ -71,9 +72,10 @@ int threadpool_add_job(struct threadpool* pool, void* (*callback_function)(void 
     pjob->callback_function = callback_function;
     pjob->arg = arg;
     pjob->next = NULL;
-    if (pool->head == NULL)    {
+    if (pool->head == NULL) {
         pool->head = pool->tail = pjob;
-        pthread_cond_broadcast(&(pool->queue_not_empty));  //队列空的时候，有任务来时就通知线程池中的线程：队列非空
+        //队列空的时候，有任务来时就通知线程池中的线程：队列非空
+        pthread_cond_broadcast(&(pool->queue_not_empty));
     }
     else {
         pool->tail->next = pjob;
@@ -109,7 +111,7 @@ void* threadpool_function(void* arg) {
             //队列为空，就可以通知threadpool_destroy函数，销毁线程函数
             pthread_cond_signal(&(pool->queue_empty));
         }
-        if (pool->queue_cur_num == pool->queue_max_num - 1) {
+        if (pool->queue_cur_num < pool->queue_max_num) {
             //队列非满，就可以通知threadpool_add_job函数，添加新任务
             pthread_cond_broadcast(&(pool->queue_not_full));
         }
@@ -120,6 +122,7 @@ void* threadpool_function(void* arg) {
         pjob = NULL;
     }
 }
+
 int threadpool_destroy(struct threadpool *pool) {
     assert(pool != NULL);
     pthread_mutex_lock(&(pool->mutex));
