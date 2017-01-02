@@ -6,9 +6,9 @@
 using namespace std;
 
 struct job {
-	void *func(void *args);
+	void *(*func)(void *args);
 	void *args;
-	job(void *f1(void *), void *arg) {
+	job(void *(*f1)(void *), void *arg) {
 		func = f1;
 		args = arg;
 	}
@@ -24,7 +24,7 @@ void *func(void *args) {
 	job j1 = jobs.front();
 	jobs.pop();
 	pthread_mutex_unlock(&mutex);
-	j1.func(j1.args);
+	(*j1.func)(j1.args);
 	sleep(1);
 	cout << "finish executing job #" << *(int *)args << endl;
 	return NULL;
@@ -42,12 +42,12 @@ int main() {
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&count, 0, 0);
 	for (int i = 0; i < 4; i++) {
-		pthread_create(threads[i], NULL, func, NULL);
+		pthread_create(&threads[i], NULL, func, NULL);
 	}
 	for (int i = 0; i < 10; i++) {
 		a = i;
 		pthread_mutex_lock(&mutex);
-		jobs.push(job(sqr, &a));
+		jobs.push(job(&sqr, &a));
 		pthread_mutex_unlock(&mutex);
 		sem_post(&count);
 	}
