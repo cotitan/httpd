@@ -3,7 +3,7 @@
 
 #define SEGSIZE 10240
 extern void *accept_req(void *);
-typedef job int
+typedef int job;
 struct thread_params {
 	int connfd;
 	char *header;
