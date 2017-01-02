@@ -1,5 +1,6 @@
 #include <semaphore.h>
 #include <pthread.h>
+#include <unistd.h>
 #include <iostream>
 #include <queue>
 using namespace std;
@@ -7,6 +8,10 @@ using namespace std;
 struct job {
 	void *func(void *args);
 	void *args;
+	job(void *f1(void *), void *arg) {
+		func = f1;
+		args = arg;
+	}
 };
 
 pthread_mutex_t mutex;
@@ -14,14 +19,14 @@ sem_t count;
 queue<job> jobs;
 
 void *func(void *args) {
-	sem_wait(&mutex);
+	sem_wait(&count);
 	pthread_mutex_lock(&mutex);
-	job = jobs.front();
+	job j1 = jobs.front();
 	jobs.pop();
 	pthread_mutex_unlock(&mutex);
-	job.func(job.args);
+	j1.func(j1.args);
 	sleep(1);
-	cout << "finish executing job #" << a << endl;
+	cout << "finish executing job #" << *(int *)args << endl;
 	return NULL;
 }
 
@@ -37,7 +42,7 @@ int main() {
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&count, 0, 0);
 	for (int i = 0; i < 4; i++) {
-		phtread_create(threads[i], NULL, func, NULL);
+		pthread_create(threads[i], NULL, func, NULL);
 	}
 	for (int i = 0; i < 10; i++) {
 		a = i;
