@@ -73,6 +73,6 @@ public:
 		pthread_mutex_unlock(&mutex);
 		sem_post(&nJob);
 	}
-}
+};
 
 #endif
