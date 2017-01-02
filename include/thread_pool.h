@@ -25,7 +25,7 @@ private:
 			job cur_job = jobs.front();
 			jobs.pop();
 			pthread_mutex_unlock(&mutex);
-			exec_job(job);
+			exec_job(cur_job);
 		}
 	}
 
