@@ -46,9 +46,10 @@ int main() {
 	for (int i = 0; i < 4; i++) {
 		pthread_create(&threads[i], NULL, func, NULL);
 	}
-	for (int i = 0; i < 10; i++) {
+	int i = 0;
+	while (cin.getchar()) {
 		int *a = new int;
-		*a = i;
+		*a = i++;
 		pthread_mutex_lock(&mutex);
 		jobs.push(job(&sqr, a));
 		pthread_mutex_unlock(&mutex);
