@@ -47,7 +47,7 @@ int main() {
 		pthread_create(&threads[i], NULL, func, NULL);
 	}
 	int i = 0;
-	while (cin.getchar()) {
+	while (getchar() != '#') {
 		int *a = new int;
 		*a = i++;
 		pthread_mutex_lock(&mutex);
