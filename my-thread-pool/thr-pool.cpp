@@ -27,7 +27,7 @@ void *func(void *args) {
 		pthread_mutex_unlock(&mutex);
 		(*j1.func)(j1.args);
 		sleep(1);
-		cout << "finish executing job #" << *(int *)args << endl;
+		cout << "finish executing job #" << *(int *)j1.args << endl;
 	}
 	return NULL;
 }
@@ -39,7 +39,6 @@ void *sqr(void *args) {
 }
 
 int main() {
-	int a;
 	pthread_t threads[4];
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&count, 0, 0);
@@ -47,7 +46,7 @@ int main() {
 		pthread_create(&threads[i], NULL, func, NULL);
 	}
 	for (int i = 0; i < 10; i++) {
-		a = i;
+		int a = i;
 		pthread_mutex_lock(&mutex);
 		jobs.push(job(&sqr, &a));
 		pthread_mutex_unlock(&mutex);
