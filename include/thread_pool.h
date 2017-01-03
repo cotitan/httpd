@@ -31,6 +31,15 @@ private:
 		}
 	}
 
+
+	void delete_event(int epollfd, int fd, int state) {
+		struct epoll_event ev;
+		ev.events = state;
+		ev.data.fd = fd;
+		epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
+	}
+
+
 	static void exec_job(int fd) {
 		char *header = new char[SEGSIZE + 1] { 0 };
 		int nread = read(fd, header, SEGSIZE);
@@ -45,18 +54,18 @@ private:
         	close(fd);
         	delete_event(epfd,fd,EPOLLIN); //删除监听
         	delete[] header;
-    	}
-    	else {
-    		struct thread_params param = { fd, header, nread };
-    		void *status = accept_req((void *)&param);
-    		if (status == (void *)-1) {
-    			close(fd);
+        }
+        else {
+        	struct thread_params param = { fd, header, nread };
+        	void *status = accept_req((void *)&param);
+        	if (status == (void *)-1) {
+        		close(fd);
         		delete_event(epfd,fd,EPOLLIN); //删除监听
         		delete[] header;
         	}
         	// header will be deleted in accept_req
-    	}
-	}
+        }
+    }
 
 
 public:

@@ -86,13 +86,6 @@ void server::add_event(int epfd, int fd, int state) {
 		perror("error adding events!\n");
 }
 
-void server::delete_event(int epollfd, int fd, int state) {
-    struct epoll_event ev;
-    ev.events = state;
-    ev.data.fd = fd;
-    epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
-}
-
 server::~server() {
 	close(listenfd);
 	cerr << "Server shutdown, all connect closed\n";
