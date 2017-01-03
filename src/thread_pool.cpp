@@ -1,6 +1,19 @@
 #include "thread_pool.h"
 
-thread_pool::thread_pool(int epfd, int nThr = 10) {
+
+void *func(void *args) {
+	thread_pool *pool = (thread_pool *)args;
+	while (true) {
+		sem_wait(&(pool->nJob));
+		pthread_mutex_lock(&(pool->mutex));
+		job cur_job = pool->jobs.front();
+		pool->jobs.pop();
+		pthread_mutex_unlock(&(pool->mutex));
+		exec_job(cur_job);
+	}
+}
+
+thread_pool::thread_pool(int epollfd, int nThr = 10) {
 	nThread = nThr;
 	epfd = epollfd;
 	pthread_mutex_init(&mutex, NULL);
@@ -52,16 +65,4 @@ void thread_pool::delete_event(int epollfd, int fd, int state) {
 	ev.events = state;
 	ev.data.fd = fd;
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
-}
-
-void *func(void *args) {
-	thread_pool *pool = (thread_pool *)args;
-	while (true) {
-		sem_wait(&(pool->nJob));
-		pthread_mutex_lock(&(pool->mutex));
-		job cur_job = pool->jobs.front();
-		pool->jobs.pop();
-		pthread_mutex_unlock(&(pool->mutex));
-		exec_job(cur_job);
-	}
 }
