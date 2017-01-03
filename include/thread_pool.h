@@ -15,12 +15,12 @@ struct thread_params {
 
 class thread_pool {
 private:
-	static pthread_mutex_t mutex;
-	static sem_t nJob;
-	static int nThread;
-	static int epfd;	// fd of epoll
-	static queue<job> jobs;
-	static void *func(void *args) {
+	pthread_mutex_t mutex;
+	sem_t nJob;
+	int nThread;
+	int epfd;	// fd of epoll
+	queue<job> jobs;
+	friend void *func(void *args) {
 		while (true) {
 			sem_wait(&nJob);
 			pthread_mutex_lock(&mutex);
@@ -32,7 +32,7 @@ private:
 	}
 
 
-	static void delete_event(int epollfd, int fd, int state) {
+	void delete_event(int epollfd, int fd, int state) {
 		struct epoll_event ev;
 		ev.events = state;
 		ev.data.fd = fd;
@@ -40,7 +40,7 @@ private:
 	}
 
 
-	static void exec_job(int fd) {
+	void exec_job(int fd) {
 		char *header = new char[SEGSIZE + 1] { 0 };
 		int nread = read(fd, header, SEGSIZE);
 		if (nread == -1) {
