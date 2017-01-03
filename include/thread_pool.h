@@ -3,6 +3,8 @@
 #include <semaphore.h>
 #include <queue>
 #include <pthread.h>
+#include <unistd.h>
+#include <sys/epoll.h>
 using std::queue;
 
 #define SEGSIZE 10240
