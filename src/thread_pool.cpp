@@ -9,7 +9,7 @@ void *func(void *args) {
 		job cur_job = pool->jobs.front();
 		pool->jobs.pop();
 		pthread_mutex_unlock(&(pool->mutex));
-		exec_job(cur_job);
+		pool->exec_job(cur_job);
 	}
 }
 

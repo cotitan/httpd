@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <sys/epoll.h>
+#include <cstdlib>
 using std::queue;
 
 #define SEGSIZE 10240
