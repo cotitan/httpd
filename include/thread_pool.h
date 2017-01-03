@@ -15,11 +15,11 @@ struct thread_params {
 
 class thread_pool {
 private:
-	pthread_mutex_t mutex;
-	sem_t nJob;
-	int nThread;
-	int epfd;	// fd of epoll
-	queue<job> jobs;
+	static pthread_mutex_t mutex;
+	static sem_t nJob;
+	static int nThread;
+	static int epfd;	// fd of epoll
+	static queue<job> jobs;
 	static void *func(void *args) {
 		while (true) {
 			sem_wait(&nJob);
@@ -31,7 +31,7 @@ private:
 		}
 	}
 
-	void exec_job(int fd) {
+	static void exec_job(int fd) {
 		char *header = new char[SEGSIZE + 1] { 0 };
 		int nread = read(fd, header, SEGSIZE);
 		if (nread == -1) {
