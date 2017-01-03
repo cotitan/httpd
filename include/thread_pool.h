@@ -32,7 +32,7 @@ private:
 	}
 
 
-	void delete_event(int epollfd, int fd, int state) {
+	static void delete_event(int epollfd, int fd, int state) {
 		struct epoll_event ev;
 		ev.events = state;
 		ev.data.fd = fd;
