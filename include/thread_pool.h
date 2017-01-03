@@ -34,7 +34,7 @@ private:
 	void exec_job(int fd);
 
 public:
-	thread_pool(int epollfd, int nThr = 10);
+	thread_pool(int epollfd, int nThr = 12);
 
 	void add_job(int fd);
 };

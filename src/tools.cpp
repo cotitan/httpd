@@ -7,7 +7,7 @@ using namespace http;
 using namespace std;
 
 #ifndef SEGSIZE
-	#define SEGSIZE 10240
+	#define SEGSIZE 102400
 #endif
 
 inline int min(int x, int y) {
