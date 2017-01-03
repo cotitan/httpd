@@ -2,6 +2,7 @@
 #define THREAD_POOL_H
 #include <semaphore.h>
 #include <queue>
+#include <pthread.h>
 using std::queue;
 
 #define SEGSIZE 10240
@@ -20,6 +21,7 @@ private:
 	int nThread;
 	int epfd;	// fd of epoll
 	queue<job> jobs;
+
 	friend void *func(void *args);
 
 	void delete_event(int epollfd, int fd, int state);
