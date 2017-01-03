@@ -1,6 +1,6 @@
 #include "thread_pool.h"
 
-thread_pool::thread_pool(int epfd, int fd) {
+thread_pool::thread_pool(int epfd, int nThr = 10) {
 	nThread = nThr;
 	epfd = epollfd;
 	pthread_mutex_init(&mutex, NULL);
