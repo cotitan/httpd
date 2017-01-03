@@ -13,7 +13,7 @@ void *func(void *args) {
 	}
 }
 
-thread_pool::thread_pool(int epollfd, int nThr = 10) {
+thread_pool::thread_pool(int epollfd, int nThr) {
 	nThread = nThr;
 	epfd = epollfd;
 	pthread_mutex_init(&mutex, NULL);
