@@ -72,5 +72,6 @@ thread_pool::~thread_pool() {
 	void *ret;
 	for (int i = 0; i < nThread; i++)
 		pthread_join(threads[i], &ret);
+	printf("threads recycled!\n")
 	delete[] threads;
 }
