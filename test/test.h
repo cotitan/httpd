@@ -10,7 +10,7 @@ private:
 	static queue<int> jobs;
 	static pthread_mutex_t mutex;
 	static sem_t nJobs;
-	pthread_t *threads;
+	static pthread_t *threads;
 public:
 	test(int nThr = 10) {
 		for (int i = 0; i < nThr; i++)
