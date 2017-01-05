@@ -44,4 +44,4 @@ public:
 			pthread_join(threads[i], NULL);
 		delete[] threads;
 	}
-}
+};
