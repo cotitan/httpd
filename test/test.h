@@ -12,8 +12,15 @@ private:
 	static sem_t nJobs;
 	static pthread_t *threads;
 public:
-	test(int nThr = 10) {
-		for (int i = 0; i < nThr; i++)
+	static void init(int nThr) {
+		nThread = nThr;
+		pthread_mutex_init(&mutex);
+		sem_init(&nJobs, 0, 0);
+		threads = NULL;
+	}
+	test() {
+		threads = new pthread_t[nThread];
+		for (int i = 0; i < nThread; i++)
 			pthread_create(&threads[i], NULL, &exec, NULL);
 		cout << nThr << " threads created!\n";
 	}
