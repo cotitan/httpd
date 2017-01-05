@@ -12,12 +12,6 @@ private:
 	static sem_t nJobs;
 	static pthread_t *threads;
 public:
-	static void init(int nThr) {
-		nThread = nThr;
-		pthread_mutex_init(&mutex, NULL);
-		sem_init(&nJobs, 0, 0);
-		threads = NULL;
-	}
 	test() {
 		threads = new pthread_t[nThread];
 		for (int i = 0; i < nThread; i++)
