@@ -27,7 +27,6 @@ size_t get_file_size(const char *file) {
 void send_resp(int fd, int code, const char *state,
 	const char *type, const char *datapath) {
 
-	char buf[SEGSIZE];
 	httpResponse *res = nullptr;
 
 	if (datapath == nullptr) {
@@ -35,15 +34,18 @@ void send_resp(int fd, int code, const char *state,
 		res->send_head(fd);
 	} else {
 		size_t len = get_file_size(datapath);
+		char *buf = new char[len + 1];
 		res = new httpResponse(code, state, type, len);
 		res->send_head(fd);
 		ifstream fin(datapath);
 		// fin.read(buf, SEGSIZE);
-		while (!fin.eof()) {
-			fin.read(buf, SEGSIZE);
-			write(fd, buf, fin.gcount());
+		size_t count = 0;
+		while (!fin.eof() && count < len) {
+			fin.read(buf, len);
+			count += fin.gcount();
 		}
-		// write(fd, buf, strlen(buf));
+		write(fd, buf, len);
+		delete[] buf;
 		fin.close();
 	}
 
