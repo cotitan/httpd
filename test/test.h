@@ -13,10 +13,6 @@ private:
 	pthread_t *threads;
 public:
 	test(int nThr = 10) {
-		nThread = nThr;
-		pthread_mutex_init(&mutex, NULL);
-		sem_init(&nJobs, 0, 0);
-		threads = new pthread_t[nThr];
 		for (int i = 0; i < nThr; i++)
 			pthread_create(&threads[i], NULL, &exec, NULL);
 		cout << nThr << " threads created!\n";
