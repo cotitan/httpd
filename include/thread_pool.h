@@ -7,7 +7,7 @@
 #include <sys/epoll.h>
 #include <cstdlib>
 #include <cstdio>
-using std::queue;
+using namespace std;
 
 #define SEGSIZE 10240
 extern void *accept_req(void *);
