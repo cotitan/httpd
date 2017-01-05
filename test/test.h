@@ -14,7 +14,7 @@ private:
 public:
 	static void init(int nThr) {
 		nThread = nThr;
-		pthread_mutex_init(&mutex);
+		pthread_mutex_init(&mutex, NULL);
 		sem_init(&nJobs, 0, 0);
 		threads = NULL;
 	}
@@ -22,7 +22,7 @@ public:
 		threads = new pthread_t[nThread];
 		for (int i = 0; i < nThread; i++)
 			pthread_create(&threads[i], NULL, &exec, NULL);
-		cout << nThr << " threads created!\n";
+		cout << nThread << " threads created!\n";
 	}
 	void add_job(int fd) {
 		pthread_mutex_lock(&mutex);
