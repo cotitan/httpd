@@ -18,7 +18,7 @@ thread_pool::thread_pool(int epollfd, int nThr) {
 	epfd = epollfd;
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&nJob, 0, 0);
-	pthread_t *threads = new pthread_t[nThread];
+	threads = new pthread_t[nThread];
 	for (int i = 0; i < nThread; i++)
 		pthread_create(&threads[i], NULL, &func, this);
 }
@@ -65,4 +65,8 @@ void thread_pool::delete_event(int epollfd, int fd, int state) {
 	ev.events = state;
 	ev.data.fd = fd;
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
+}
+
+thread_pool::~thread_pool() {
+	delete[] threads;
 }

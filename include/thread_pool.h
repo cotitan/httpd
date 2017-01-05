@@ -24,12 +24,12 @@ private:
 	sem_t nJob;
 	int nThread;
 	int epfd;	// fd of epoll
+	pthread_t *threads;
 	queue<job> jobs;
 
 	friend void *func(void *args);
 
 	void delete_event(int epollfd, int fd, int state);
-
 
 	void exec_job(int fd);
 
@@ -37,6 +37,8 @@ public:
 	thread_pool(int epollfd, int nThr = 12);
 
 	void add_job(int fd);
+
+	~thread_pool();
 };
 
 #endif
