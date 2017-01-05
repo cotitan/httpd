@@ -5,8 +5,8 @@ int test::nThread = nThr;
 pthread_t* test::threads = new pthread_t[nThr];
 pthread_mutex_t test::mutex = PTHREAD_MUTEX_INITIALIZER;
 sem_t temp;
-sem_init(&temp, 0, 0);
-sem_t test::nJobs = temp;
+sem_init(&test::nJobs, 0, 0);
+// sem_t test::nJobs = temp;
 queue<int> test::jobs = queue<int>();
 
 int main() {
