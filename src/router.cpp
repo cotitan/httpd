@@ -36,8 +36,10 @@ void *accept_req(void* param_) {
 	int connfd = param.connfd;
 	char *header = param.header, *pos;
 	int nread = param.len;
-	if ((pos = strstr(header, "\r\n\r\n")) == NULL)
+	if ((pos = strstr(header, "\r\n\r\n")) == NULL) {
+		delete[] header;
 		return (void *)-1;
+	}
 	/*
 	while (nread && nread <= SEGSIZE
 			&& (pos = strstr(header, "\r\n\r\n")) == NULL) {
@@ -50,6 +52,7 @@ void *accept_req(void* param_) {
 	httpRequest req(header);
 
 	if (req.getMethod() == ERR) {
+		delete[] header;
 		return (void *) -1;
 	}
 

@@ -9,18 +9,19 @@ void *func(void *args) {
 		job cur_job = pool->jobs.front();
 		pool->jobs.pop();
 		pthread_mutex_unlock(&(pool->mutex));
-		pool->exec_job(cur_job);
+		pool->exec_job(cur_job); //
 	}
 }
 
-thread_pool::thread_pool(int epollfd, int nThr) {
+thread_pool::thread_pool(int epollfd, int nThr) { // deque
 	nThread = nThr;
 	epfd = epollfd;
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&nJob, 0, 0);
-	threads = new pthread_t[nThread];
+	threads = new pthread_t[nThread]; //
 	for (int i = 0; i < nThread; i++)
-		pthread_create(&threads[i], NULL, &func, this);
+		pthread_create(&threads[i], NULL, &func, this); //
+	printf("%d threads created!\n", nThread);
 }
 
 void thread_pool::add_job(int fd) {
@@ -33,7 +34,7 @@ void thread_pool::add_job(int fd) {
 }
 
 void thread_pool::exec_job(int fd) {
-	char *header = new char[SEGSIZE + 1] { 0 };
+	char *header = new char[SEGSIZE + 1] { 0 }; //
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {
 		perror("read error:");
@@ -68,5 +69,8 @@ void thread_pool::delete_event(int epollfd, int fd, int state) {
 }
 
 thread_pool::~thread_pool() {
+	void *ret;
+	for (int i = 0; i < nThread; i++)
+		pthread_join(threads[i], &ret);
 	delete[] threads;
 }

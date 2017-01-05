@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <vector>
+#include "thread_pool.h"
 using std::vector;
 
 #define SA struct sockaddr
