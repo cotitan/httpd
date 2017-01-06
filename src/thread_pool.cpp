@@ -15,8 +15,8 @@ void *thread_pool::func(void *args) {
 	}
 }
 
-thread_pool::thread_pool(DEL *del, int epollfd, int nThr) { // deque
-	delete_event = del;
+thread_pool::thread_pool(server *s, int epollfd, int nThr) { // deque
+	serv = s;
 	nThread = nThr;
 	epfd = epollfd;
 	pthread_mutex_init(&mutex, NULL);
@@ -46,13 +46,13 @@ void thread_pool::exec_job(int fd) {
 	if (nread == -1) {
 		perror("read error:");
 		close(fd); //记住close fd
-		delete_event(fd,EPOLLIN); //删除监听
+		serv->delete_event(fd,EPOLLIN); //删除监听
 		delete[] header;
 	}
 	else if (nread == 0) {
 		// fprintf(stderr,"client close.\n");
 		close(fd);
-		delete_event(fd,EPOLLIN); //删除监听
+		serv->delete_event(fd,EPOLLIN); //删除监听
 		delete[] header;
 	}
 	else {
@@ -62,7 +62,7 @@ void thread_pool::exec_job(int fd) {
 		// keep the connection until client ask to close
 		// if (status == (void *)-1) {
 			close(fd);
-			delete_event(fd,EPOLLIN); //删除监听
+			serv->delete_event(fd,EPOLLIN); //删除监听
 		// }
 		delete[] header;
 	}

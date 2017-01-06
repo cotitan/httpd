@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
+#include "server.h"
 using namespace std;
 
 #ifdef DEBUG_MODE
@@ -24,11 +25,10 @@ struct thread_params {
 	int len;
 };
 
-
-typedef void (*DEL)(int, int);
+class server;
 class thread_pool {
 private:
-	DEL delete_event;
+	server *serv;
 	pthread_mutex_t mutex;
 	sem_t nJob;
 	int nThread;
@@ -43,7 +43,7 @@ private:
 	void exec_job(int fd);
 
 public:
-	thread_pool(DEL *del, int epollfd, int nThr = 12);
+	thread_pool(server *s, int epollfd, int nThr = 12);
 
 	void add_job(int fd);
 
