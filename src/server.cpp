@@ -52,6 +52,7 @@ int server::start() {
 		}
 	}
 	close(listenfd);
+	close(epfd);
 	return 0;
 }
 
