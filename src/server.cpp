@@ -23,8 +23,11 @@ server::server(const char *ip, short port) {
 	servaddr.sin_port = htons(port);
 	bzero(&servaddr.sin_zero, sizeof(servaddr.sin_zero));
 
+	pthread_mutex_init(&epl_mutex, NULL);
+	epfd = epoll_create(EPSIZE);
 	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		perror("Error: fail to get sockfd!");
+
 }
 
 int server::start() {
@@ -34,16 +37,16 @@ int server::start() {
 	if (bind_listen() == -1)
 		return -1;
 
-	int epfd = epoll_create(EPSIZE);
 	struct epoll_event events[EPSIZE];
 	memset(events, 0, sizeof(events));
 	add_event(epfd, listenfd, EPOLLIN);
-	thread_pool pool(epfd, 8);
+	thread_pool pool(this, epfd, 8);
 
+	int ret, fd, i;
 	while (1) {
-		int ret = epoll_wait(epfd, events, EPSIZE, -1);
-		for (int i = 0; i < ret; i++) {
-			int fd = events[i].data.fd;
+		ret = epoll_wait(epfd, events, EPSIZE, -1);
+		for (i = 0; i < ret; i++) {
+			fd = events[i].data.fd;
 			if (fd == listenfd && (events[i].events & EPOLLIN)) {
 				handle_accept(epfd, listenfd);
 			} else if (events[i].events & EPOLLIN) {
@@ -55,7 +58,7 @@ int server::start() {
 	return 0;
 }
 
-void server::handle_accept(int epfd, int listenfd) {
+void server::handle_accept() {
 	socklen_t sin_size = sizeof(servaddr);
 	int fd = accept(listenfd, (SA *)&connaddr, &sin_size);
 	if (fd == -1)
@@ -84,14 +87,25 @@ int server::bind_listen() {
 	return 0;
 }
 
-void server::add_event(int epfd, int fd, int state) {
+void server::add_event(int fd, int state) {
 	DEBUG("add event...\n");
 	struct epoll_event ev;
 	memset(&ev, 0, sizeof(ev));
 	ev.events = state;
 	ev.data.fd = fd;
+	pthread_mutex_lock(&epl_mutex);
 	if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
 		perror("error adding events!\n");
+	pthread_mutex_unlock(&epl_mutex);
+}
+
+void server::delete_event(int fd, int state) {
+	struct epoll_event ev;
+	ev.events = state;
+	ev.data.fd = fd;
+	pthread_mutex_lock(&epl_mutex);
+	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
+	pthread_mutex_unlock(&epl_mutex);
 }
 
 server::~server() {

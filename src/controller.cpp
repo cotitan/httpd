@@ -24,7 +24,7 @@ int pic_controller::handle(int connfd, const httpRequest &req) {
 			fout.write(req.getData(), req.getContentLength());
 			fout.close();
 		}
-		 return send_resp(connfd, 200, "OK");
+		return send_resp(connfd, 200, "OK");
 	} else if (req.getMethod() == GET) {
 		ifstream fin(path.c_str());
 		if (fin.is_open()) {

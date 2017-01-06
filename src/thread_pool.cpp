@@ -15,7 +15,8 @@ void *thread_pool::func(void *args) {
 	}
 }
 
-thread_pool::thread_pool(int epollfd, int nThr) { // deque
+thread_pool::thread_pool(DEL *del, int epollfd, int nThr) { // deque
+	delete_event = del;
 	nThread = nThr;
 	epfd = epollfd;
 	pthread_mutex_init(&mutex, NULL);
@@ -27,7 +28,7 @@ thread_pool::thread_pool(int epollfd, int nThr) { // deque
 }
 
 void thread_pool::add_job(int fd) {
-	DEBUG("add job ...\n");
+	DEBUG("add job ...");
 	pthread_mutex_lock(&mutex);
 	jobs.push(fd);
 	pthread_mutex_unlock(&mutex);
@@ -59,12 +60,11 @@ void thread_pool::exec_job(int fd) {
 		void *status = accept_req((void *)&param);
 		// to achieve connection-alive,
 		// keep the connection until client ask to close
-		if (status == (void *)-1) {
+		// if (status == (void *)-1) {
 			close(fd);
 			delete_event(epfd,fd,EPOLLIN); //删除监听
-		}
+		// }
 		delete[] header;
-	 	// header will be deleted in accept_req
 	}
 }
 

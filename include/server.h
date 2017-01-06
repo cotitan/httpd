@@ -1,7 +1,6 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -15,13 +14,15 @@ using std::vector;
 class server {
 private:
 	int listenfd;
+	int epfd;
+	pthread_mutex_t epl_mutex;
 	struct sockaddr_in servaddr;
 	struct sockaddr_in connaddr;
 	int bind_listen();
-	void do_read(int epfd, int fd);
-	void handle_accept(int epfd, int listenfd);
-	void add_event(int epfd, int fd, int state);
-	void delete_event(int epfd, int fd, int state);
+	void do_read(int fd);
+	void handle_accept();
+	void add_event(int fd, int state);
+	void delete_event(int fd, int state);
 
 public:
 	// default = "127.0.0.1:9090"

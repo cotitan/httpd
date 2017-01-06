@@ -24,8 +24,11 @@ struct thread_params {
 	int len;
 };
 
+
+typedef void (*DEL)(int, int, int);
 class thread_pool {
 private:
+	DEL delete_event;
 	pthread_mutex_t mutex;
 	sem_t nJob;
 	int nThread;
@@ -35,7 +38,7 @@ private:
 
 	static void *func(void *args);
 
-	void delete_event(int epollfd, int fd, int state);
+	// void delete_event(int epollfd, int fd, int state);
 
 	void exec_job(int fd);
 

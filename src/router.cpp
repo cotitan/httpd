@@ -55,7 +55,7 @@ void *accept_req(void* param_) {
 		return (void *) -1;
 	}
 
-	printf("%d %s\n", req.getMethod(), req.getUrl().c_str());
+	// printf("%d %s\n", req.getMethod(), req.getUrl().c_str());
 	if (req.getMethod() == POST) {
 		int content_length = req.getContentLength();
 		char *data = new char[content_length + 1];
