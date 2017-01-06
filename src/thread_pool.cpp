@@ -38,6 +38,7 @@ void thread_pool::exec_job(int fd) {
 	DEBUG("exec_job #");
 	#ifdef DEBUG_MODE
 		cout << fd << endl;
+	#endif
 	char *header = new char[SEGSIZE + 1] { 0 }; //
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {

@@ -11,6 +11,7 @@
 using namespace std;
 
 #define DEBUG_MODE
+
 #ifdef DEBUG_MODE
 #define DEBUG(str) cout << (str) << endl
 #else
