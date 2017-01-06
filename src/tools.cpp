@@ -32,7 +32,8 @@ int send_resp(int fd, int code, const char *state,
 
 	if (datapath == nullptr) {
 		res = new httpResponse(code, state, type, 0);
-		res->send_head(fd);
+		if (res->send_head(fd) == -1)
+			status = -1;
 	} else {
 		size_t len = get_file_size(datapath);
 		char *buf = new char[len + 1];

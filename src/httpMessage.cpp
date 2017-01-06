@@ -133,7 +133,7 @@ void httpResponse::set_content_length(size_t length) {
 	content_length = length;
 }
 
-void httpResponse::send_head(int fd) {
+int httpResponse::send_head(int fd) {
 	char buf[1024], temp[100];
 	sprintf(buf, "HTTP/1.1 %d %s\r\n", code, phrase.c_str());
 	strcat(buf, "Server: jdbhttpd/0.1.0\r\n");
@@ -146,7 +146,9 @@ void httpResponse::send_head(int fd) {
 	}
 	strcat(buf, "\r\n");
 	if (write(fd, buf, strlen(buf)) == -1)
-		close(fd);
+		return -1;
+	else
+		return 0;
 }
 
 
