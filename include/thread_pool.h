@@ -32,7 +32,6 @@ private:
 	pthread_mutex_t mutex;
 	sem_t nJob;
 	int nThread;
-	int epfd;	// fd of epoll
 	pthread_t *threads;
 	queue<int> jobs;
 
@@ -43,7 +42,7 @@ private:
 	void exec_job(int fd);
 
 public:
-	thread_pool(server *s, int epollfd, int nThr = 12);
+	thread_pool(server *s, int nThr = 12);
 
 	void add_job(int fd);
 

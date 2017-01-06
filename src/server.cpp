@@ -40,7 +40,7 @@ int server::start() {
 	struct epoll_event events[EPSIZE];
 	memset(events, 0, sizeof(events));
 	add_event(listenfd, EPOLLIN);
-	thread_pool pool(this, epfd, 8);
+	thread_pool pool(this, 8);
 
 	int ret, fd, i;
 	while (1) {

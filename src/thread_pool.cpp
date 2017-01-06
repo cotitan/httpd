@@ -15,10 +15,9 @@ void *thread_pool::func(void *args) {
 	}
 }
 
-thread_pool::thread_pool(server *s, int epollfd, int nThr) { // deque
+thread_pool::thread_pool(server *s, int nThr) { // deque
 	serv = s;
 	nThread = nThr;
-	epfd = epollfd;
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&nJob, 0, 0);
 	threads = new pthread_t[nThread]; //
