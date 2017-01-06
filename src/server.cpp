@@ -68,7 +68,7 @@ void server::handle_accept(int epfd, int listenfd) {
 void server::bind_listen() {
 	int flag = 1;
 	socklen_t flag_size = sizeof(flag);
-	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, flag_size);
+	// setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, flag_size);
 	if (bind(listenfd, (SA *)&servaddr, sizeof(servaddr)) < 0)
 		perror("Error: fail to bind!");
 	if (listen(listenfd, 1000) < 0)
