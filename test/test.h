@@ -2,6 +2,7 @@
 #include <semaphore.h>
 #include <queue>
 #include <iostream>
+#include <signal.h>
 using namespace std;
 
 class test {
