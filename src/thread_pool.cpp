@@ -32,7 +32,6 @@ void thread_pool::add_job(int fd) {
 	jobs.push(fd);
 	pthread_mutex_unlock(&mutex);
 	sem_post(&nJob);
-	
 }
 
 void thread_pool::exec_job(int fd) {
@@ -44,14 +43,14 @@ void thread_pool::exec_job(int fd) {
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {
 		perror("read error:");
-		close(fd); //记住close fd
 		serv->delete_event(fd,EPOLLIN); //删除监听
+		close(fd); //记住close fd
 		delete[] header;
 	}
 	else if (nread == 0) {
 		// fprintf(stderr,"client close.\n");
-		close(fd);
 		serv->delete_event(fd,EPOLLIN); //删除监听
+		close(fd);
 		delete[] header;
 	}
 	else {
@@ -60,8 +59,8 @@ void thread_pool::exec_job(int fd) {
 		// to achieve connection-alive,
 		// keep the connection until client ask to close
 		// if (status == (void *)-1) {
-			close(fd);
 			serv->delete_event(fd,EPOLLIN); //删除监听
+			close(fd);
 		// }
 		delete[] header;
 	}
