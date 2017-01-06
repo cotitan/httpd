@@ -9,7 +9,7 @@
 #include <cstdio>
 using namespace std;
 
-#define SEGSIZE 10240
+#define SEGSIZE 1024
 extern void *accept_req(void *);
 struct thread_params {
 	int connfd;

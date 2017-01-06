@@ -51,7 +51,6 @@ int server::start() {
 			}
 		}
 	}
-	close(listenfd);
 	close(epfd);
 	return 0;
 }
@@ -61,7 +60,7 @@ void server::handle_accept(int epfd, int listenfd) {
 	int fd = accept(listenfd, (SA *)&connaddr, &sin_size);
 	if (fd == -1)
         perror("accpet error:");
-    else {    
+    else {
         // printf("accept a new client: %s:%d\n",
         // inet_ntoa(connaddr.sin_addr), connaddr.sin_port);                       //添加一个客户描述符和事件         
         add_event(epfd, fd, EPOLLIN);

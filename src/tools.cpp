@@ -41,7 +41,7 @@ void send_resp(int fd, int code, const char *state,
 		// fin.read(buf, SEGSIZE);
 		size_t count = 0;
 		while (!fin.eof() && count < len) {
-			fin.read(buf, len);
+			fin.read(buf + count, len);
 			count += fin.gcount();
 		}
 		if (write(fd, buf, len) == -1) {
