@@ -48,7 +48,7 @@ int server::start() {
 		for (i = 0; i < ret; i++) {
 			fd = events[i].data.fd;
 			if (fd == listenfd && (events[i].events & EPOLLIN)) {
-				handle_accept(epfd, listenfd);
+				handle_accept();
 			} else if (events[i].events & EPOLLIN) {
 				pool.add_job(fd);
 			}
@@ -68,7 +68,7 @@ void server::handle_accept() {
 		cout << "on fd #" << fd << endl;
         // printf("accept a new client: %s:%d\n",
         // inet_ntoa(connaddr.sin_addr), connaddr.sin_port);                       //添加一个客户描述符和事件         
-        add_event(epfd, fd, EPOLLIN);
+        add_event(fd, EPOLLIN);
     } 
 }
 

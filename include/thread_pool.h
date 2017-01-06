@@ -25,7 +25,7 @@ struct thread_params {
 };
 
 
-typedef void (*DEL)(int, int, int);
+typedef void (*DEL)(int, int);
 class thread_pool {
 private:
 	DEL delete_event;
@@ -43,7 +43,7 @@ private:
 	void exec_job(int fd);
 
 public:
-	thread_pool(int epollfd, int nThr = 12);
+	thread_pool(DEL *del, int epollfd, int nThr = 12);
 
 	void add_job(int fd);
 

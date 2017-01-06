@@ -46,13 +46,13 @@ void thread_pool::exec_job(int fd) {
 	if (nread == -1) {
 		perror("read error:");
 		close(fd); //记住close fd
-		delete_event(epfd,fd,EPOLLIN); //删除监听
+		delete_event(fd,EPOLLIN); //删除监听
 		delete[] header;
 	}
 	else if (nread == 0) {
 		// fprintf(stderr,"client close.\n");
 		close(fd);
-		delete_event(epfd,fd,EPOLLIN); //删除监听
+		delete_event(fd,EPOLLIN); //删除监听
 		delete[] header;
 	}
 	else {
@@ -62,19 +62,20 @@ void thread_pool::exec_job(int fd) {
 		// keep the connection until client ask to close
 		// if (status == (void *)-1) {
 			close(fd);
-			delete_event(epfd,fd,EPOLLIN); //删除监听
+			delete_event(fd,EPOLLIN); //删除监听
 		// }
 		delete[] header;
 	}
 }
 
-
+/*
 void thread_pool::delete_event(int epollfd, int fd, int state) {
 	struct epoll_event ev;
 	ev.events = state;
 	ev.data.fd = fd;
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
 }
+*/
 
 thread_pool::~thread_pool() {
 	void *ret;
