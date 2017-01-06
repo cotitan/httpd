@@ -70,7 +70,7 @@ namespace http {
 
 		void set_content_length(size_t content_length_);
 		
-		void send_head(int fd);
+		int send_head(int fd);
 	};
 }; // end namespace
 
