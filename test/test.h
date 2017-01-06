@@ -6,16 +6,19 @@ using namespace std;
 
 class test {
 private:
-	static int nThread;
-	static queue<int> jobs;
-	static pthread_mutex_t mutex;
-	static sem_t nJobs;
-	static pthread_t *threads;
+	int nThread;
+	queue<int> jobs;
+	pthread_mutex_t mutex;
+	sem_t nJobs;
+	pthread_t *threads;
 public:
-	test() {
+	test(int nThr) {
+		nThread = nThr;
+		pthread_mutex_init(&mutex, NULL);
+		sem_init(&nJobs, 0, 0);
 		threads = new pthread_t[nThread];
 		for (int i = 0; i < nThread; i++)
-			pthread_create(&threads[i], NULL, &exec, NULL);
+			pthread_create(&threads[i], NULL, &exec, this);
 		cout << nThread << " threads created!\n";
 	}
 	void add_job(int fd) {
@@ -25,13 +28,15 @@ public:
 		sem_post(&nJobs);
 	}
 	static void* exec(void *args) {
+		test *obj = (test *)args;
 		while (true) {
-			sem_wait(&nJobs);
-			pthread_mutex_lock(&mutex);
-			if (jobs.front() > 10)
+			sem_wait(&obj->nJobs);
+			pthread_mutex_lock(&obj->mutex);
+			if (obj->jobs.front() > 10)
 				break;
-			cout << "exec job: #" << jobs.front();
+			cout << "exec job: #" << obj->jobs.front();
 			cout << " on thread #" << pthread_self() << endl;
+			obj->jobs.pop();
 			pthread_mutex_unlock(&mutex);
 		}
 		return NULL;
