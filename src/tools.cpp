@@ -45,6 +45,7 @@ void send_resp(int fd, int code, const char *state,
 			count += fin.gcount();
 		}
 		if (write(fd, buf, len) == -1) {
+			perror("fail to write: ");
 			close(fd);
 		}
 		delete[] buf;
