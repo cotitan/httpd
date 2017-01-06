@@ -12,7 +12,7 @@ private:
 	sem_t nJobs;
 	pthread_t *threads;
 public:
-	test(int nThr) {
+	test(int nThr = 10) {
 		nThread = nThr;
 		pthread_mutex_init(&mutex, NULL);
 		sem_init(&nJobs, 0, 0);
@@ -37,7 +37,7 @@ public:
 			cout << "exec job: #" << obj->jobs.front();
 			cout << " on thread #" << pthread_self() << endl;
 			obj->jobs.pop();
-			pthread_mutex_unlock(&mutex);
+			pthread_mutex_unlock(&obj->mutex);
 		}
 		return NULL;
 	}
