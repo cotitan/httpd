@@ -24,7 +24,7 @@ thread_pool::thread_pool(int epollfd, int nThr) { // deque
 }
 
 void thread_pool::add_job(int fd) {
-	
+	cout << "add job ...\n";
 	pthread_mutex_lock(&mutex);
 	jobs.push(fd);
 	pthread_mutex_unlock(&mutex);
@@ -33,6 +33,7 @@ void thread_pool::add_job(int fd) {
 }
 
 void thread_pool::exec_job(int fd) {
+	cout << "exec_job #" << fd << endl;
 	char *header = new char[SEGSIZE + 1] { 0 }; //
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {
