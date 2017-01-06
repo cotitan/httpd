@@ -31,7 +31,8 @@ int server::start() {
 
 	signal(SIGPIPE, SIG_IGN);
 
-	bind_listen();
+	if (bind_listen() == -1)
+		return -1;
 
 	int epfd = epoll_create(EPSIZE);
 	struct epoll_event events[EPSIZE];
@@ -50,6 +51,7 @@ int server::start() {
 			}
 		}
 	}
+	close(listenfd);
 	return 0;
 }
 
@@ -65,18 +67,19 @@ void server::handle_accept(int epfd, int listenfd) {
     } 
 }
 
-void server::bind_listen() {
+int server::bind_listen() {
 	int flag = 1;
 	socklen_t flag_size = sizeof(flag);
 	// setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, flag_size);
 	if (bind(listenfd, (SA *)&servaddr, sizeof(servaddr)) < 0) {
 		perror("Error: fail to bind!");
-		exit(0);
+		return -1;
 	}
 	if (listen(listenfd, 1000) < 0)
 		perror("Error: fail to listen!");
 	fprintf(stdout, "start listening on port %d...\n",
 		ntohs(servaddr.sin_port));
+	return 0;
 }
 
 void server::add_event(int epfd, int fd, int state) {
