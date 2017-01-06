@@ -27,7 +27,7 @@ private:
 	pthread_t *threads;
 	queue<job> jobs;
 
-	friend void *func(void *args);
+	static void *func(void *args);
 
 	void delete_event(int epollfd, int fd, int state);
 

@@ -1,7 +1,7 @@
 #include "thread_pool.h"
 
 
-void *func(void *args) {
+void *thread_pool::func(void *args) {
 	thread_pool *pool = (thread_pool *)args;
 	while (true) {
 		sem_wait(&(pool->nJob));
