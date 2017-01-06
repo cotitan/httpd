@@ -16,13 +16,13 @@ using namespace http;
 
 class controller {
 public:
-	virtual void handle(int fd, const httpRequest &req);
+	virtual int handle(int fd, const httpRequest &req);
 	virtual ~controller() {}
 };
 
 class pic_controller: public controller {
 public:
-	virtual void handle(int fd, const httpRequest &req);
+	virtual int handle(int fd, const httpRequest &req);
 
 	virtual ~pic_controller() {}
 };

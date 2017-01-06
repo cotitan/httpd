@@ -24,10 +24,11 @@ size_t get_file_size(const char *file) {
 	return len;
 }
 
-void send_resp(int fd, int code, const char *state,
+int send_resp(int fd, int code, const char *state,
 	const char *type, const char *datapath) {
 
 	httpResponse *res = nullptr;
+	int status = 0;
 
 	if (datapath == nullptr) {
 		res = new httpResponse(code, state, type, 0);
@@ -44,13 +45,17 @@ void send_resp(int fd, int code, const char *state,
 			fin.read(buf + count, len);
 			count += fin.gcount();
 		}
+		fin.close();
+
 		if (write(fd, buf, len) == -1) {
+			status = -1;
 			perror("fail to write: ");
 			close(fd);
+			// delete event
 		}
 		delete[] buf;
-		fin.close();
 	}
 
-	delete res;	
+	delete res;
+	return status;
 }

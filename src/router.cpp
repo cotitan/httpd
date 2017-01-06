@@ -13,7 +13,7 @@ struct thread_params {
 	int len;
 };
 
-void route(int connfd, const httpRequest &req) {
+int route(int connfd, const httpRequest &req) {
 	string url = req.getUrl();
 
 	controller *ctrller = NULL;
@@ -26,8 +26,9 @@ void route(int connfd, const httpRequest &req) {
 		ctrller = new pic_controller;
 	}
 
-	ctrller->handle(connfd, req);
+	int status = ctrller->handle(connfd, req);
 	delete ctrller;
+	return status;
 }
 
 void *accept_req(void* param_) {
@@ -72,7 +73,8 @@ void *accept_req(void* param_) {
 		req.setData(data);
 	}
 	
-	route(connfd, req);
+	if (route(connfd, req) == -1)
+		return (void *) -1;
 	// delete[] data; // will be deleted in httpRequest::~httpRequest()
 	// pthread_exit((void *)0);
 	return NULL;
