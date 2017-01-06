@@ -39,8 +39,8 @@ int server::start() {
 
 	struct epoll_event events[EPSIZE];
 	memset(events, 0, sizeof(events));
-	add_event(epfd, listenfd, EPOLLIN);
-	thread_pool pool(this, epfd, 8);
+	add_event(listenfd, EPOLLIN);
+	thread_pool pool(delete_event, epfd, 8);
 
 	int ret, fd, i;
 	while (1) {
@@ -104,7 +104,7 @@ void server::delete_event(int fd, int state) {
 	ev.events = state;
 	ev.data.fd = fd;
 	pthread_mutex_lock(&epl_mutex);
-	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
+	epoll_ctl(epfd, EPOLL_CTL_DEL, fd, &ev);
 	pthread_mutex_unlock(&epl_mutex);
 }
 
