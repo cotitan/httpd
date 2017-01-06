@@ -51,7 +51,6 @@ int send_resp(int fd, int code, const char *state,
 		if (write(fd, buf, len) == -1) {
 			status = -1;
 			perror("fail to write: ");
-			close(fd);
 			// delete event
 		}
 		delete[] buf;
