@@ -1,6 +1,6 @@
 #include "thread_pool.h"
 
-
+// #define DEBUG_MODE
 
 void *thread_pool::func(void *args) {
 	thread_pool *pool = (thread_pool *)args;
