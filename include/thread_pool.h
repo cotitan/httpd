@@ -11,7 +11,6 @@ using namespace std;
 
 #define SEGSIZE 10240
 extern void *accept_req(void *);
-typedef int job;
 struct thread_params {
 	int connfd;
 	char *header;
@@ -25,7 +24,7 @@ private:
 	int nThread;
 	int epfd;	// fd of epoll
 	pthread_t *threads;
-	queue<job> jobs;
+	queue<int> jobs;
 
 	static void *func(void *args);
 

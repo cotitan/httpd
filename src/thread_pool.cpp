@@ -1,12 +1,11 @@
 #include "thread_pool.h"
 
-
 void *thread_pool::func(void *args) {
 	thread_pool *pool = (thread_pool *)args;
 	while (true) {
 		sem_wait(&(pool->nJob));
 		pthread_mutex_lock(&(pool->mutex));
-		job cur_job = pool->jobs.front();
+		int cur_job = pool->jobs.front();
 		pool->jobs.pop();
 		pthread_mutex_unlock(&(pool->mutex));
 		pool->exec_job(cur_job); //
