@@ -30,7 +30,7 @@ public:
 		sem_post(&nJobs);
 	}
 	static void sigproc(int sig) {
-		cout << "signal processing... on thread #";
+		cout << "signal processing on thread #";
 		cout << pthread_self() << endl;
 		exit(0);
 	}
@@ -53,5 +53,6 @@ public:
 		for (int i = 0; i < nThread; i++)
 			pthread_join(threads[i], NULL);
 		delete[] threads;
+		cout << "threads cleared\n";
 	}
 };
