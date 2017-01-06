@@ -29,6 +29,8 @@ public:
 		sem_post(&nJobs);
 	}
 	static void sigproc(int sig) {
+		cout << "signal processing... on thread #";
+		cout << pthread_self() << endl;
 		pthread_exit(0);
 	}
 	static void* exec(void *args) {
