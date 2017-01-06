@@ -11,9 +11,11 @@
 using namespace std;
 
 #define DEBUG_MODE
-#define DEBUG(str) \
-	#ifdef DEBUG_MODE \
-		cout << (str) << endl
+#ifdef DEBUG_MODE
+#define DEBUG(str) cout << (str) << endl
+#else
+#define DEBUG(str)
+#endif
 
 #define SEGSIZE 1024
 extern void *accept_req(void *);
