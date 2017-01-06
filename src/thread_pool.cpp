@@ -11,6 +11,7 @@ void *thread_pool::func(void *args) {
 		pool->jobs.pop();
 		pthread_mutex_unlock(&(pool->mutex));
 		pool->exec_job(cur_job); //
+		//
 	}
 }
 
