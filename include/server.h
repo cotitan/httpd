@@ -18,16 +18,16 @@ private:
 	pthread_mutex_t epl_mutex;
 	struct sockaddr_in servaddr;
 	struct sockaddr_in connaddr;
-	int bind_listen();
-	void do_read(int fd);
-	void handle_accept();
-	void add_event(int fd, int state);
-	void delete_event(int fd, int state);
 
 public:
 	// default = "127.0.0.1:9090"
 	server();
 	server(const char *addr, short port);
+	int bind_listen();
+	void do_read(int fd);
+	void handle_accept();
+	void add_event(int fd, int state);
+	void delete_event(int fd, int state);
 	// bind, listen, accept, response
 	int start();
 	~server();
