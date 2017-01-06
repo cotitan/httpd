@@ -10,12 +10,10 @@
 #include <iostream>
 using namespace std;
 
-
-
 #ifdef DEBUG_MODE
-#define DEBUG(str) cout << (str) << endl
+#define DEBUG(str) (cout << (str))
 #else
-#define DEBUG(str)
+#define DEBUG(str) 
 #endif
 
 #define SEGSIZE 1024
