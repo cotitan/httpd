@@ -44,7 +44,9 @@ void send_resp(int fd, int code, const char *state,
 			fin.read(buf, len);
 			count += fin.gcount();
 		}
-		write(fd, buf, len);
+		if (write(fd, buf, len) == -1) {
+			close(fd);
+		}
 		delete[] buf;
 		fin.close();
 	}

@@ -145,7 +145,8 @@ void httpResponse::send_head(int fd) {
 		strcat(buf, temp);
 	}
 	strcat(buf, "\r\n");
-	write(fd, buf, strlen(buf));
+	if (write(fd, buf, strlen(buf)) == -1)
+		close(fd);
 }
 
 

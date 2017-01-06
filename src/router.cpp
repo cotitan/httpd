@@ -37,7 +37,6 @@ void *accept_req(void* param_) {
 	char *header = param.header, *pos;
 	int nread = param.len;
 	if ((pos = strstr(header, "\r\n\r\n")) == NULL) {
-		delete[] header;
 		return (void *)-1;
 	}
 	/*
@@ -52,7 +51,6 @@ void *accept_req(void* param_) {
 	httpRequest req(header);
 
 	if (req.getMethod() == ERR) {
-		delete[] header;
 		return (void *) -1;
 	}
 
@@ -73,7 +71,6 @@ void *accept_req(void* param_) {
 
 		req.setData(data);
 	}
-	delete[] header;
 	
 	route(connfd, req);
 	// delete[] data; // will be deleted in httpRequest::~httpRequest()
