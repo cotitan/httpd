@@ -27,7 +27,11 @@ public:
 		pthread_mutex_unlock(&mutex);
 		sem_post(&nJobs);
 	}
+	static void sigproc(int sig) {
+		pthread_exit(0);
+	}
 	static void* exec(void *args) {
+		signal(SIGINT, &sigproc);
 		test *obj = (test *)args;
 		while (true) {
 			sem_wait(&obj->nJobs);
