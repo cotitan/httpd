@@ -3,6 +3,7 @@
 #include <queue>
 #include <iostream>
 #include <signal.h>
+#include <cstdlib>
 using namespace std;
 
 class test {
