@@ -69,8 +69,10 @@ void server::bind_listen() {
 	int flag = 1;
 	socklen_t flag_size = sizeof(flag);
 	// setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, flag_size);
-	if (bind(listenfd, (SA *)&servaddr, sizeof(servaddr)) < 0)
+	if (bind(listenfd, (SA *)&servaddr, sizeof(servaddr)) < 0) {
 		perror("Error: fail to bind!");
+		exit(0);
+	}
 	if (listen(listenfd, 1000) < 0)
 		perror("Error: fail to listen!");
 	fprintf(stdout, "start listening on port %d...\n",
