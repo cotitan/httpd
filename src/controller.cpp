@@ -1,6 +1,6 @@
 #include "controller.h"
 
-extern void send_resp(int fd, int code, const char *state,
+extern int send_resp(int fd, int code, const char *state,
 	const char *type = "", const char *datapath = nullptr);
 
 int controller::handle(int fd, const httpRequest &req) {
