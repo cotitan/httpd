@@ -17,7 +17,7 @@ private:
 	int listenfd;
 	struct sockaddr_in servaddr;
 	struct sockaddr_in connaddr;
-	void bind_listen();
+	int bind_listen();
 	void do_read(int epfd, int fd);
 	void handle_accept(int epfd, int listenfd);
 	void add_event(int epfd, int fd, int state);
