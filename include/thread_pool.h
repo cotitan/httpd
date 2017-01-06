@@ -10,6 +10,11 @@
 #include <iostream>
 using namespace std;
 
+#define DEBUG_MODE
+#define DEBUG(str) \
+	#ifdef DEBUG_MODE \
+		cout << (str) << endl
+
 #define SEGSIZE 1024
 extern void *accept_req(void *);
 struct thread_params {

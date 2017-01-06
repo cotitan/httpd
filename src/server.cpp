@@ -56,7 +56,7 @@ int server::start() {
 }
 
 void server::handle_accept(int epfd, int listenfd) {
-	cout << "handle_accept ...\n";
+	DEBUG("handle_accept ...\n");
 	socklen_t sin_size = sizeof(servaddr);
 	int fd = accept(listenfd, (SA *)&connaddr, &sin_size);
 	if (fd == -1)
@@ -84,7 +84,7 @@ int server::bind_listen() {
 }
 
 void server::add_event(int epfd, int fd, int state) {
-	cout << "add event...\n";
+	DEBUG("add event...\n");
 	struct epoll_event ev;
 	memset(&ev, 0, sizeof(ev));
 	ev.events = state;
