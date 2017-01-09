@@ -42,7 +42,7 @@ void thread_pool::exec_job(int fd) {
 	char *header = new char[SEGSIZE + 1] { 0 }; //
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {
-		perror("read error:");
+		perror("read error: %d", fd);
 		close(fd); //记住close fd
 		serv->delete_event(fd,EPOLLIN); //删除监听
 		delete[] header;
