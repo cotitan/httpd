@@ -106,7 +106,7 @@ void server::delete_event(int fd, int state) {
 	pthread_mutex_lock(&epl_mutex);
 	epoll_ctl(epfd, EPOLL_CTL_DEL, fd, &ev);
 	pthread_mutex_unlock(&epl_mutex);
-	DEBUG("Delete a fd #%d\n", fd);
+	DEBUG("Delete a fd #%d\n\n", fd);
 }
 
 server::~server() {
