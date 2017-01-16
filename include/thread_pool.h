@@ -11,12 +11,6 @@
 #include "server.h"
 using namespace std;
 
-#ifdef DEBUG_MODE
-#define DEBUG(str) (cout << (str))
-#else
-#define DEBUG(str) 
-#endif
-
 #define SEGSIZE 1024
 extern void *accept_req(void *);
 struct thread_params {
