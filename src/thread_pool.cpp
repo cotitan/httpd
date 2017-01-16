@@ -29,7 +29,7 @@ void thread_pool::start() {
 }
 
 void thread_pool::add_job(int fd) {
-	DEBUG("add job #%d", fd);
+	DEBUG("Add job #%d\n", fd);
 	pthread_mutex_lock(&mutex);
 	jobs.push(fd);
 	pthread_mutex_unlock(&mutex);
@@ -37,7 +37,7 @@ void thread_pool::add_job(int fd) {
 }
 
 void thread_pool::exec_job(int fd) {
-	DEBUG("exec_job #%d", fd);
+	DEBUG("exec_job #%d\n", fd);
 	char *header = new char[SEGSIZE + 1] { 0 }; //
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {
