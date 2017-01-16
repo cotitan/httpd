@@ -1,6 +1,12 @@
 #include "thread_pool.h"
 
-// #define DEBUG_MODE
+#define DEBUG_MODE
+
+#ifdef DEBUG_MODE
+#define DEBUG printf
+#else
+#define DEBUG
+#endif
 
 void *thread_pool::func(void *args) {
 	thread_pool *pool = (thread_pool *)args;
@@ -30,7 +36,7 @@ void thread_pool::start() {
 }
 
 void thread_pool::add_job(int fd) {
-	DEBUG("add job ...");
+	DEBUG("add job #%d", fd);
 	pthread_mutex_lock(&mutex);
 	jobs.push(fd);
 	pthread_mutex_unlock(&mutex);
@@ -38,10 +44,7 @@ void thread_pool::add_job(int fd) {
 }
 
 void thread_pool::exec_job(int fd) {
-	DEBUG("exec_job #");
-	#ifdef DEBUG_MODE
-		cout << fd << endl;
-	#endif
+	DEBUG("exec_job #%d", fd);
 	char *header = new char[SEGSIZE + 1] { 0 }; //
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {
