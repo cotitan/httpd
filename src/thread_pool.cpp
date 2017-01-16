@@ -1,13 +1,5 @@
 #include "thread_pool.h"
 
-#define DEBUG_MODE
-
-#ifdef DEBUG_MODE
-#define DEBUG printf
-#else
-#define DEBUG
-#endif
-
 void *thread_pool::func(void *args) {
 	thread_pool *pool = (thread_pool *)args;
 	while (true) {
