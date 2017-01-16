@@ -39,6 +39,8 @@ private:
 
 	// void delete_event(int epollfd, int fd, int state);
 
+	void start();
+
 	void exec_job(int fd);
 
 public:

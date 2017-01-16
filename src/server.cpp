@@ -41,6 +41,7 @@ int server::start() {
 	memset(events, 0, sizeof(events));
 	add_event(listenfd, EPOLLIN);
 	thread_pool pool(this, 8);
+	pool.start();
 
 	int ret, fd, i;
 	while (1) {

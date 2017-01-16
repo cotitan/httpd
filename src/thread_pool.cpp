@@ -21,9 +21,12 @@ thread_pool::thread_pool(server *s, int nThr) { // deque
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&nJob, 0, 0);
 	threads = new pthread_t[nThread]; //
+}
+
+void thread_pool::start() {
 	for (int i = 0; i < nThread; i++)
-		pthread_create(&threads[i], NULL, &func, this); //
-	printf("%d threads created!\n", nThread);
+		pthread_create(threads[i], NULL, &func, this);
+	cout << nThread << " threads created!\n";
 }
 
 void thread_pool::add_job(int fd) {
