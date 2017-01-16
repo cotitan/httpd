@@ -63,10 +63,9 @@ void server::handle_accept() {
 	socklen_t sin_size = sizeof(servaddr);
 	int fd = accept(listenfd, (SA *)&connaddr, &sin_size);
 	if (fd == -1)
-        perror("accpet error:");
+        perror("Accpet Error:");
     else {
-		DEBUG("handle_accept ");
-		cout << "on fd #" << fd << endl;
+		DEBUG("Accept a request on fd #%d\n", fd);
         // printf("accept a new client: %s:%d\n",
         // inet_ntoa(connaddr.sin_addr), connaddr.sin_port);                       //添加一个客户描述符和事件         
         add_event(fd, EPOLLIN);
@@ -89,7 +88,7 @@ int server::bind_listen() {
 }
 
 void server::add_event(int fd, int state) {
-	DEBUG("add event...\n");
+	DEBUG("Add event on fd#%d\n", fd);
 	struct epoll_event ev;
 	memset(&ev, 0, sizeof(ev));
 	ev.events = state;
@@ -107,6 +106,7 @@ void server::delete_event(int fd, int state) {
 	pthread_mutex_lock(&epl_mutex);
 	epoll_ctl(epfd, EPOLL_CTL_DEL, fd, &ev);
 	pthread_mutex_unlock(&epl_mutex);
+	DEBUG("Delete a fd #%d\n", fd);
 }
 
 server::~server() {
