@@ -11,8 +11,8 @@ void *thread_pool::func(void *args) {
 		pool->jobs.pop();
 		pthread_mutex_unlock(&(pool->mutex));
 		pool->exec_job(cur_job); //
-		//
 	}
+	return NULL;
 }
 
 thread_pool::thread_pool(server *s, int nThr) { // deque
@@ -45,7 +45,7 @@ void thread_pool::exec_job(int fd) {
 	char *header = new char[SEGSIZE + 1] { 0 }; //
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {
-		perror("read error");
+		perror("read1 error");
 		close(fd); //记住close fd
 		serv->delete_event(fd,EPOLLIN); //删除监听
 		delete[] header;
