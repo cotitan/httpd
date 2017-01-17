@@ -30,7 +30,6 @@ struct thread_params {
 class server;
 class thread_pool {
 private:
-	server *serv;
 	pthread_mutex_t mutex;
 	sem_t nJob;
 	int nThread;
@@ -41,10 +40,12 @@ private:
 
 	// void delete_event(int epollfd, int fd, int state);
 
-	void exec_job(int fd);
+	functor thread_func;
 
 public:
-	thread_pool(server *s, int nThr = 12);
+	friend void *manager(void *args);
+	
+	thread_pool(functor &func, int nThr = 4);
 
 	// start running threads
 	void start();

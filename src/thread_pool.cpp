@@ -1,7 +1,7 @@
 #include "thread_pool.h"
 #include <sys/types.h>
 
-void *thread_pool::func(void *args) {
+void *manager(void *args) {
 	thread_pool *pool = (thread_pool *)args;
 	while (true) {
 		sem_wait(&(pool->nJob));
@@ -14,13 +14,13 @@ void *thread_pool::func(void *args) {
 		pool->jobs.pop();
 		DEBUG("Queue size After pop: %lu\n", pool->jobs.size());
 		pthread_mutex_unlock(&(pool->mutex));
-		pool->exec_job(cur_job); //
+		pool->thread_func(cur_job); //
 	}
 	return NULL;
 }
 
-thread_pool::thread_pool(server *s, int nThr) { // deque
-	serv = s;
+thread_pool::thread_pool(functor &func, int nThr) { // deque
+	thread_func = func;
 	nThread = nThr;
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&nJob, 0, 0);
@@ -29,7 +29,7 @@ thread_pool::thread_pool(server *s, int nThr) { // deque
 
 void thread_pool::start() {
 	for (int i = 0; i < nThread; i++)
-		pthread_create(&threads[i], NULL, &func, this);
+		pthread_create(&threads[i], NULL, &manager, this);
 	cout << nThread << " threads created!\n";
 }
 

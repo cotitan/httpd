@@ -40,6 +40,7 @@ int server::start() {
 	struct epoll_event events[EPSIZE];
 	memset(events, 0, sizeof(events));
 	add_event(listenfd, EPOLLIN);
+	functor func(this);
 	thread_pool pool(this, 8);
 	pool.start();
 
@@ -80,7 +81,7 @@ int server::bind_listen() {
 		perror("Error: fail to bind!");
 		return -1;
 	}
-	if (listen(listenfd, 1000) < 0)
+	if (listen(listenfd, 256) < 0)
 		perror("Error: fail to listen!");
 	fprintf(stdout, "start listening on port %d...\n",
 		ntohs(servaddr.sin_port));
