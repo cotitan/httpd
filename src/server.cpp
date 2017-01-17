@@ -41,7 +41,7 @@ int server::start() {
 	memset(events, 0, sizeof(events));
 	add_event(listenfd, EPOLLIN);
 	functor func(this);
-	thread_pool pool(this, 8);
+	thread_pool pool(func, 4);	// 4 threads
 	pool.start();
 
 	int ret, fd, i;
