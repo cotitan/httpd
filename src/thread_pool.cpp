@@ -39,6 +39,8 @@ void thread_pool::add_job(int fd) {
 	jobs.push(fd);
 	pthread_mutex_unlock(&mutex);
 	sem_post(&nJob);
+	if (jobs.size() > 10)
+		exit(0);
 }
 
 void thread_pool::exec_job(int fd) {
