@@ -1,4 +1,5 @@
 #include "thread_pool.h"
+#include <sys/syscall.h>
 
 void *thread_pool::func(void *args) {
 	thread_pool *pool = (thread_pool *)args;
