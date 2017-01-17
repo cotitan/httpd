@@ -1,6 +1,16 @@
 #include "functor.h"
+#include "thread_pool.h"
+#define DEBUG_MODE
 
-void functor::functor(server *s) {
+#ifdef DEBUG_MODE
+#define DEBUG printf
+#else
+#define DEBUG
+#endif
+
+#define SEGSIZE 1024
+
+functor::functor(server *s) {
 	serv = s;
 }
 
