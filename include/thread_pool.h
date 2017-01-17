@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <iostream>
 #include "server.h"
+#include "functor.h"
 using namespace std;
 
 #define DEBUG_MODE
