@@ -5,7 +5,7 @@ void *thread_pool::func(void *args) {
 	thread_pool *pool = (thread_pool *)args;
 	while (true) {
 		sem_wait(&(pool->nJob));
-		DEBUG("Get new task to do! %ud\n", gettid());
+		DEBUG("Get new task to do! %ud\n", *pthread_self());
 		DEBUG("Queue size: %ud\n", pool->jobs.size());
 		pthread_mutex_lock(&(pool->mutex));
 		int cur_job = pool->jobs.front();
