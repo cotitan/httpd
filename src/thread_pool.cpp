@@ -1,16 +1,16 @@
 #include "thread_pool.h"
-#include <sys/syscall.h>
+#include <sys/types.h>
 
 void *thread_pool::func(void *args) {
 	thread_pool *pool = (thread_pool *)args;
 	while (true) {
 		sem_wait(&(pool->nJob));
 		DEBUG("Get new task to do! %ud\n", gettid());
-		DEBUG("Queue size: %d\n", pool->jobs.size());
+		DEBUG("Queue size: %ud\n", pool->jobs.size());
 		pthread_mutex_lock(&(pool->mutex));
 		int cur_job = pool->jobs.front();
 		pool->jobs.pop();
-		DEBUG("Queue size After pop: %d\n", pool->jobs.size());
+		DEBUG("Queue size After pop: %ud\n", pool->jobs.size());
 		pthread_mutex_unlock(&(pool->mutex));
 		pool->exec_job(cur_job); //
 	}
