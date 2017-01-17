@@ -7,7 +7,7 @@ void *thread_pool::func(void *args) {
 		sem_wait(&(pool->nJob));
 		DEBUG("Get new task to do! %lu\n", pthread_self());
 		DEBUG("Queue size: %lu\n", pool->jobs.size());
-		if (pool->size() > 10)
+		if (pool->jobs.size() > 10)
 			exit(0);
 		pthread_mutex_lock(&(pool->mutex));
 		int cur_job = pool->jobs.front();
