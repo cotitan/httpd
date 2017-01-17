@@ -7,8 +7,8 @@ class functor {
 private:
 	server *serv;
 public:
+	functor(server *s);
 	void operator()(int fd);
-	explicit functor(server *s);
 };
 
 #endif

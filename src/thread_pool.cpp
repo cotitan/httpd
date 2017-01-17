@@ -42,7 +42,7 @@ void thread_pool::add_job(int fd) {
 	if (jobs.size() > 10)
 		exit(0);
 }
-
+/*
 void thread_pool::exec_job(int fd) {
 	DEBUG("exec_job #%d\n", fd);
 	char *header = new char[SEGSIZE + 1] { 0 }; //
