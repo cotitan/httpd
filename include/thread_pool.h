@@ -1,7 +1,6 @@
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H
 #include <semaphore.h>
-#include <queue>
 #include <pthread.h>
 #include <unistd.h>
 #include <sys/epoll.h>
@@ -9,6 +8,7 @@
 #include <cstdio>
 #include <iostream>
 #include "server.h"
+#include "threadsafe_queue.h"
 using namespace std;
 
 #define DEBUG_MODE
@@ -30,11 +30,10 @@ struct thread_params {
 class server;
 class thread_pool {
 private:
-	pthread_mutex_t mutex;
 	sem_t nJob;
 	int nThread;
 	pthread_t *threads;
-	queue<int> jobs;
+	threadsafe_queue<int> jobs;
 
 	static void *func(void *args);
 

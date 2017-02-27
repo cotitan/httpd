@@ -1,6 +1,6 @@
 #include <memory>
-#include <queue> 
-#include <mutex> 
+#include <queue>
+#include <mutex>
 #include <condition_variable>
 
 template<typename T>
@@ -35,4 +35,6 @@ public:
 	std::shared_ptr<T> wait_and_pop();
 	
     bool empty() const;
+
+    size_t size() const;
 };

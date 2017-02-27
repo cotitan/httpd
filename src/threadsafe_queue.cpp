@@ -65,3 +65,9 @@ bool threadsafe_queue<T>::empty() const {
 	std::lock_guard<std::mutex> lk(mut);
 	return data_queue.empty();
 }
+
+template<typename T>
+size_t threadsafe_queue<T>::size() const {
+	std::lock_guard<std::mutex> lk(mut);
+	return data_queue.size();
+}

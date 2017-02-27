@@ -3,15 +3,13 @@
 
 void *manager(void *args) {
 	thread_pool *pool = (thread_pool *)args;
+	int cur_job;
 	while (true) {
-		sem_wait(&(pool->nJob));
-		DEBUG("Get new task to do! %lu\n", pthread_self());
 		DEBUG("Queue size: %lu\n", pool->jobs.size());
-		pthread_mutex_lock(&(pool->mutex));
-		int cur_job = pool->jobs.front();
-		pool->jobs.pop();
+		sem_wait(&pool->nJob);
+		pool->jobs.wait_and_pop(cur_job);
+		DEBUG("Get new task to do! %lu\n", pthread_self());
 		DEBUG("Queue size After pop: %lu\n", pool->jobs.size());
-		pthread_mutex_unlock(&(pool->mutex));
 		pool->exec_job(cur_job); //
 	}
 	return NULL;
@@ -32,9 +30,7 @@ void thread_pool::start() {
 
 void thread_pool::add_job(int fd) {
 	DEBUG("Add job #%d\n", fd);
-	pthread_mutex_lock(&mutex);
 	jobs.push(fd);
-	pthread_mutex_unlock(&mutex);
 	sem_post(&nJob);
 }
 
