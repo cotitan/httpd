@@ -3,6 +3,14 @@
 #include <cstdio>
 #include <unistd.h>
 
+#define DEBUG_MODE
+
+#ifdef DEBUG_MODE
+#define DEBUG printf
+#else
+#define DEBUG
+#endif
+
 #ifndef SEGSIZE
 	#define SEGSIZE 10240
 #endif
