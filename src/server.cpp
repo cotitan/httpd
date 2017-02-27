@@ -40,8 +40,7 @@ int server::start() {
 	struct epoll_event events[EPSIZE];
 	memset(events, 0, sizeof(events));
 	add_event(listenfd, EPOLLIN);
-	functor func(this);
-	thread_pool pool(func, 4);	// 4 threads
+	thread_pool pool(4);	// 4 threads
 	pool.start();
 
 	int ret, fd, i;

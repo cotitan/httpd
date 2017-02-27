@@ -19,8 +19,7 @@ void *manager(void *args) {
 	return NULL;
 }
 
-thread_pool::thread_pool(functor &func, int nThr) { // deque
-	thread_func = func;
+thread_pool::thread_pool(int nThr) { // deque
 	nThread = nThr;
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&nJob, 0, 0);
