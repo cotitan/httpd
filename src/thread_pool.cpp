@@ -14,7 +14,7 @@ void *manager(void *args) {
 		pool->jobs.pop();
 		DEBUG("Queue size After pop: %lu\n", pool->jobs.size());
 		pthread_mutex_unlock(&(pool->mutex));
-		pool->thread_func(cur_job); //
+		pool->exec_job(cur_job); //
 	}
 	return NULL;
 }
@@ -42,20 +42,20 @@ void thread_pool::add_job(int fd) {
 	if (jobs.size() > 10)
 		exit(0);
 }
-/*
+
 void thread_pool::exec_job(int fd) {
 	DEBUG("exec_job #%d\n", fd);
 	char *header = new char[SEGSIZE + 1] { 0 }; //
 	int nread = read(fd, header, SEGSIZE);
 	if (nread == -1) {
 		perror("read1 error");
-		serv->delete_event(fd,EPOLLIN); //删除监听
+		// serv->delete_event(fd,EPOLLIN); //删除监听
 		close(fd); //记住close fd
 		delete[] header;
 	}
 	else if (nread == 0) {
 		// fprintf(stderr,"client close.\n");
-		serv->delete_event(fd,EPOLLIN); //删除监听
+		// serv->delete_event(fd,EPOLLIN); //删除监听
 		close(fd);
 		delete[] header;
 	}
@@ -65,8 +65,8 @@ void thread_pool::exec_job(int fd) {
 		// to achieve connection-alive,
 		// keep the connection until client ask to close
 		// if (status == (void *)-1) {
-			serv->delete_event(fd, EPOLLIN); //删除监听
-			close(fd);
+		// serv->delete_event(fd, EPOLLIN); //删除监听
+		close(fd);
 		// }
 		delete[] header;
 	}
