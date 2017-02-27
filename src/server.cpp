@@ -48,7 +48,7 @@ int server::start() {
 		ret = epoll_wait(epfd, events, EPSIZE, -1);
 		for (i = 0; i < ret; i++) {
 			fd = events[i].data.fd;
-			if (fd == listenfd && (events[i].events & EPOLLIN)) {
+			if (fd == listenfd) {
 				handle_accept();
 			} else if (events[i].events & EPOLLIN) {
 				pool.add_job(fd);
