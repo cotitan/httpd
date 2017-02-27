@@ -7,8 +7,6 @@ void *manager(void *args) {
 		sem_wait(&(pool->nJob));
 		DEBUG("Get new task to do! %lu\n", pthread_self());
 		DEBUG("Queue size: %lu\n", pool->jobs.size());
-		if (pool->jobs.size() > 10)
-			exit(0);
 		pthread_mutex_lock(&(pool->mutex));
 		int cur_job = pool->jobs.front();
 		pool->jobs.pop();
@@ -38,8 +36,6 @@ void thread_pool::add_job(int fd) {
 	jobs.push(fd);
 	pthread_mutex_unlock(&mutex);
 	sem_post(&nJob);
-	if (jobs.size() > 10)
-		exit(0);
 }
 
 void thread_pool::exec_job(int fd) {
