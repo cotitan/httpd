@@ -81,8 +81,10 @@ void *accept_req(void* param_) {
 		req.setData(data);
 	}
 	
-	if (route(connfd, req) == -1)
+	if (route(connfd, req) == -1) {
+		DEBUG("Finish accept_req!\n");
 		return (void *) -1;
+	}
 	// delete[] data; // will be deleted in httpRequest::~httpRequest()
 	// pthread_exit((void *)0);
 	DEBUG("Finish accept_req!\n");
