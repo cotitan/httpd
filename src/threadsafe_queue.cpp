@@ -41,7 +41,7 @@ std::shared_ptr<T> threadsafe_queue<T>::wait_and_pop() {
 
 // 不管有没有队首元素直接返回
 template<typename T>
-void threadsafe_queue<T>::try_pop(T& value) {
+bool threadsafe_queue<T>::try_pop(T& value) {
 	std::lock_guard<std::mutex> lk(mut);
 	if(data_queue.empty())
 		return false;
@@ -61,7 +61,7 @@ std::shared_ptr<T> threadsafe_queue<T>::try_pop() {
 }
 
 template<typename T>
-void threadsafe_queue<T>::empty() const {
+bool threadsafe_queue<T>::empty() const {
 	std::lock_guard<std::mutex> lk(mut);
 	return data_queue.empty();
 }
