@@ -9,7 +9,6 @@
 #include <cstdio>
 #include <iostream>
 #include "server.h"
-#include "functor.h"
 using namespace std;
 
 #define DEBUG_MODE
@@ -41,17 +40,17 @@ private:
 
 	// void delete_event(int epollfd, int fd, int state);
 
-	functor thread_func;
-
 public:
 	friend void *manager(void *args);
 	
-	thread_pool(functor &func, int nThr = 4);
+	thread_pool(int nThr = 4);
 
 	// start running threads
 	void start();
 
 	void add_job(int fd);
+
+	void exec_job(int fd);
 
 	~thread_pool();
 };
