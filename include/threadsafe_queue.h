@@ -7,7 +7,7 @@ template<typename T>
 class threadsafe_queue {
 private:
     mutable std::mutex mut;
-    std::queue<t> data_queue;  
+    std::queue<T> data_queue;
     std::condition_variable data_cond;
 public:
 	threadsafe_queue();
