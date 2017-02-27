@@ -6,6 +6,14 @@
 using namespace http;
 using namespace std;
 
+#define DEBUG_MODE
+
+#ifdef DEBUG_MODE
+#define DEBUG printf
+#else
+#define DEBUG
+#endif
+
 #ifndef SEGSIZE
 	#define SEGSIZE 102400
 #endif
@@ -51,6 +59,7 @@ int send_resp(int fd, int code, const char *state,
 		if (write(fd, buf, len) == -1) {
 			status = -1;
 			perror("fail to write: ");
+			DEBUG("Finish send_resp!\n");
 			// delete event
 		}
 		delete[] buf;
