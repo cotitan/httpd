@@ -77,5 +77,6 @@ void *accept_req(void* param_) {
 		return (void *) -1;
 	// delete[] data; // will be deleted in httpRequest::~httpRequest()
 	// pthread_exit((void *)0);
+	DEBUG("Finish accept_req!\n");
 	return NULL;
 }
