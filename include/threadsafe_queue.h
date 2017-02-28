@@ -1,3 +1,6 @@
+#ifndef THREAD_SAFE_QUEUE
+#define THREAD_SAFE_QUEUE
+
 #include <memory>
 #include <queue>
 #include <mutex>
@@ -38,3 +41,5 @@ public:
 
     size_t size() const;
 };
+
+#endif
