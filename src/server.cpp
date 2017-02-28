@@ -86,7 +86,7 @@ int server::bind_listen() {
 }
 
 void server::add_event(int fd, int state) {
-	DEBUG("Add event on fd#%d\n", fd);
+	DEBUG("Add event on fd #%d\n", fd);
 	struct epoll_event ev;
 	memset(&ev, 0, sizeof(ev));
 	ev.events = state;
