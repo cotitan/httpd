@@ -30,6 +30,7 @@ public:
 	void delete_event(int fd, int state);
 	// bind, listen, accept, response
 	int start();
+	void setnonblocking(int fd);
 	~server();
 };
 
