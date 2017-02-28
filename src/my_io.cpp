@@ -2,6 +2,8 @@
 #include <errno.h>
 #include <unistd.h>
 
+typedef int ssize_t;
+
 ssize_t readn(int fd, void * data, int len) {
 	ssize_t nread;
 	size_t nleft = len;
