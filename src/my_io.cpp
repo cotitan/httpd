@@ -7,7 +7,7 @@ ssize_t readn(int fd, void * data, int len) {
 	size_t nleft = len;
 	while (nleft > 0) {
 		if ( (nread = read(fd, data , len)) == -1) {
-			if (errno == EAGAIN || errno == EINTR)
+			if (errno == EINTR)
 				nread = 0;
 			else
 				return -1;
@@ -25,8 +25,7 @@ ssize_t writen(int fd, const void *data, size_t n) {
 	ssize_t nwritten;
 	while (nleft > 0) {
 		if ( (nwritten = write(fd, data, nleft)) <= 0) {
-			if ( nwritten < 0 &&
-				(errno == EINTR || errno == EAGAIN))
+			if ( nwritten < 0 && errno == EINTR )
 				nwritten = 0;
 			else
 				return -1;
