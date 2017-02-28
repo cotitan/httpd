@@ -1,4 +1,6 @@
 #include "my_io.h"
+#include <errno.h>
+#include <unistd.h>
 
 ssize_t readn(int fd, void * data, int len) {
 	ssize_t nread;
