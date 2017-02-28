@@ -5,8 +5,8 @@ void *manager(void *args) {
 	thread_pool *pool = (thread_pool *)args;
 	int cur_job;
 	while (true) {
-		DEBUG("Queue size: %lu\n", pool->jobs.size());
 		sem_wait(&pool->nJob);
+		DEBUG("Queue size: %lu\n", pool->jobs.size());
 		pool->jobs.wait_and_pop(cur_job);
 		DEBUG("Get new task to do! %lu\n", pthread_self());
 		DEBUG("Queue size After pop: %lu\n", pool->jobs.size());
