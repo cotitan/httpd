@@ -28,7 +28,7 @@ ssize_t writen(int fd, const void *data, size_t n) {
 		if ( (nwritten = write(fd, data, nleft)) <= 0) {
 			if ( nwritten < 0 &&
 				(errno == EINTR || errno == EAGAIN))
-				nread = 0;
+				nwritten = 0;
 			else
 				return -1;
 		}
