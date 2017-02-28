@@ -23,7 +23,7 @@ struct thread_params {
 
 int route(int connfd, const httpRequest &req) {
 	string url = req.getUrl();
-
+	DEBUG("Req on : %s\n", url.c_str());
 	controller *ctrller = NULL;
 
 	size_t epos = url.find('/', 0 + 1);

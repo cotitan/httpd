@@ -1,19 +1,10 @@
 #include "controller.h"
 
-#define DEBUG_MODE
-
-#ifdef DEBUG_MODE
-#define DEBUG printf
-#else
-#define DEBUG
-#endif
-
 extern int send_resp(int fd, int code, const char *state,
 	const char *type = "", const char *datapath = nullptr);
 
 int controller::handle(int fd, const httpRequest &req) {
 	string url = req.getUrl();
-	DEBUG("req on : %s\n", url.c_str());
 	if (url == "/" || url == "/index.html") {
 		return send_resp(fd, 200, "OK", "text/html", "res/index.html");
 	} else if (url == "/favicon.ico") {
