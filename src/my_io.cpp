@@ -2,8 +2,8 @@
 #include <errno.h>
 #include <unistd.h>
 
-int readn(int fd, void * data, int len) {
-	int nread;
+ssize_t readn(int fd, void * data, int len) {
+	ssize_t nread;
 	size_t nleft = len;
 	while (nleft > 0) {
 		if ( (nread = read(fd, data , len)) == -1) {
@@ -20,9 +20,9 @@ int readn(int fd, void * data, int len) {
 	return len - nleft;
 }
 
-int writen(int fd, const void *data, size_t n) {
+ssize_t writen(int fd, const void *data, size_t n) {
 	size_t nleft = n;
-	int nwritten;
+	ssize_t nwritten;
 	while (nleft > 0) {
 		if ( (nwritten = write(fd, data, nleft)) <= 0) {
 			if ( nwritten < 0 &&
