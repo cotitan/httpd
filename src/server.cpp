@@ -111,7 +111,7 @@ void server::delete_event(int fd, int state) {
 	DEBUG("Delete a fd #%d\n\n", fd);
 }
 
-void setnonblocking(int sock) {
+void server::setnonblocking(int sock) {
 	int opts = fcntl(sock, F_GETFL);
 	if (opts < 0) {
 		perror("fcntl(sock, GETFL) ");
