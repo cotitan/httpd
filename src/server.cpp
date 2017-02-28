@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <sys/epoll.h>
+#include <fcntl.h>
 #include "thread_pool.h"
 using namespace std;
 
@@ -37,7 +38,8 @@ int server::start() {
 
 	struct epoll_event events[EPSIZE];
 	memset(events, 0, sizeof(events));
-	add_event(listenfd, EPOLLIN);
+	setnonblocking(listenfd);
+	add_event(listenfd, EPOLLIN | EPOLLET);
 	thread_pool pool(4);	// 4 threads
 	pool.start();
 
@@ -65,8 +67,10 @@ void server::handle_accept() {
     else {
 		DEBUG("Accept a request on fd #%d\n", fd);
         // printf("accept a new client: %s:%d\n",
-        // inet_ntoa(connaddr.sin_addr), connaddr.sin_port);                       //添加一个客户描述符和事件         
-        add_event(fd, EPOLLIN);
+        // inet_ntoa(connaddr.sin_addr), connaddr.sin_port);
+        //添加一个客户描述符和事件
+        setnonblocking(fd);
+        add_event(fd, EPOLLIN | EPOLLET);
     } 
 }
 
@@ -105,6 +109,19 @@ void server::delete_event(int fd, int state) {
 	epoll_ctl(epfd, EPOLL_CTL_DEL, fd, &ev);
 	pthread_mutex_unlock(&epl_mutex);
 	DEBUG("Delete a fd #%d\n\n", fd);
+}
+
+void setnonblocking(int sock) {
+	int opts = fcntl(sock, F_GETFL);
+	if (opts < 0) {
+		perror("fcntl(sock, GETFL) ");
+		return;
+	}
+	opts = opts | O_NONBLOCK;
+	if (fcntl(sock, F_SETFL, opts) < 0) {
+		perror("fcntl(sock, F_SETFL, opts) ");
+		return;
+	}
 }
 
 server::~server() {
