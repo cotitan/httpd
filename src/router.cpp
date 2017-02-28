@@ -1,4 +1,5 @@
 #include "controller.h"
+#include "my_io.h"
 #include <cstring>
 #include <cstdio>
 #include <unistd.h>
@@ -73,7 +74,7 @@ void *accept_req(void* param_) {
 		nread -= pos + 4 - header;
 		memcpy(data, pos + 4, nread);
 		while (nread < content_length) {
-			nread += read(connfd, data + nread,
+			nread += readn(connfd, data + nread,
 				min(SEGSIZE, content_length - nread));
 			data[nread] = 0;
 		}

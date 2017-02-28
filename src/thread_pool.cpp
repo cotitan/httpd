@@ -1,4 +1,5 @@
 #include "thread_pool.h"
+#include "my_io.h"
 #include <sys/types.h>
 
 void *manager(void *args) {
@@ -37,7 +38,7 @@ void thread_pool::add_job(int fd) {
 void thread_pool::exec_job(int fd) {
 	DEBUG("exec_job #%d\n", fd);
 	char *header = new char[SEGSIZE + 1] { 0 }; //
-	int nread = read(fd, header, SEGSIZE);
+	int nread = readn(fd, header, SEGSIZE);
 	if (nread == -1) {
 		perror("read1 error");
 		// serv->delete_event(fd,EPOLLIN); //删除监听

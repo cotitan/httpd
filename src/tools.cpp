@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <unistd.h>
+#include "my_io.h"
 #include "httpMessage.h"
 using namespace http;
 using namespace std;
@@ -56,9 +57,9 @@ int send_resp(int fd, int code, const char *state,
 		}
 		fin.close();
 
-		if (write(fd, buf, len) == -1) {
+		if (writen(fd, buf, len) == -1) {
 			status = -1;
-			perror("fail to write: ");
+			perror("ERROR writen: ");
 			DEBUG("Finish send_resp!\n");
 			// delete event
 		}
