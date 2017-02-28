@@ -9,6 +9,8 @@ ssize_t readn(int fd, void * data, int len) {
 		if ( (nread = read(fd, data , len)) == -1) {
 			if (errno == EINTR)
 				nread = 0;
+			else if (errno == EAGAIN)
+				break;
 			else
 				return -1;
 		} else if (nread == 0) {
